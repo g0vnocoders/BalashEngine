@@ -1,0 +1,1 @@
+void* platspec_getframebuffer();
