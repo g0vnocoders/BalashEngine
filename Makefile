@@ -2,8 +2,9 @@ SOURCE:=$(wildcard *.c) $(wildcard *.cpp)
 OBJS:=$(SOURCE:.c=.o)
 CPPOBJS:=$(SOURCE:.cpp=.o)
 
-CXXFLAGS=CFLAGS=-Ofast 
+CXXFLAGS=-g 
+CFLAGS=$(CXXFLAGS)
 
 all:BalashEngine Makefile 
 BalashEngine: $(OBJS) $(CPPOBJS)
-	cc $(OBJS) $(CPPOBJS )-o BalashEngine  -lSDL2
+	c++ $(OBJS) $(CPPOBJS )-o BalashEngine  -lSDL2 -lpthread
