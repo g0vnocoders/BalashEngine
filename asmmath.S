@@ -12,7 +12,7 @@ asmmath_floor:
 tmp: .quad 0, 0
 mask: .quad 0x7fffffffffffffff
 .section .text
-asmmath_abs: 
+asmmath_abs:   
     andpd mask(%rip)/*64bit assembly hack for dealing with PIE*/,%xmm0
     ret
 asmmath_vec3cos:
