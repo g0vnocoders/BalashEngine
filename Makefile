@@ -1,10 +1,16 @@
+BUILDDIR=build
+OPTIMIZE=-Ofast
+
+CFLAGS= $(OPTIMIZE) -lSDL2 -lpthread
+ASFLAGS=-g
+
 SOURCE:=$(wildcard *.c) 
 ASM:=$(wildcard *.S) 
 OBJS:=$(SOURCE:.c=.o) 
 ASMOBJS:=$(ASM:.S=.o)
-CXXFLAGS=-Ofast
-CFLAGS=$(CXXFLAGS)
-ASFLAGS=-g
+
 all:BalashEngine Makefile 
+mrproper:
+	rm -rf $(BUILDDIR)
 BalashEngine: $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o BalashEngine  -lSDL2 -lpthread
+	c++ $(OBJS) $(ASMOBJS) -o BUILDDIR/BalashEngine $(CFLAGS)

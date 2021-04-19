@@ -140,7 +140,6 @@ void clearfb(){
         framebuffer[i]=0;
     }   
 }
-//maybe use chat i guess
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
 #define px pos.x
 #define py pos.y
