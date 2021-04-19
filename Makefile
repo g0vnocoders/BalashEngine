@@ -2,8 +2,7 @@ SOURCE:=$(wildcard *.c)
 ASM:=$(wildcard *.S) 
 OBJS:=$(SOURCE:.c=.o) 
 ASMOBJS:=$(ASM:.S=.o)
-
-CXXFLAGS=-g 
+CXXFLAGS=-Ofast
 CFLAGS=$(CXXFLAGS)
 ASFLAGS=-g
 all:BalashEngine Makefile 

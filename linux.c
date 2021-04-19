@@ -11,13 +11,12 @@ static SDL_Renderer* renderer;
 volatile char sync;
 void platspec_sync(){
     sync=0;
-    while(sync==0);
+    while(!sync);
 }
 void* loop(void* unused){
     while(1){
         sync=1;
         while(sync==1);
-        usleep(16);
         SDL_UpdateTexture(fbtex,NULL,pix,width*4);
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer,fbtex,NULL,NULL);

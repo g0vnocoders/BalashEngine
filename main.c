@@ -20,9 +20,9 @@ int main(){
                     break;
             }
             drawline(calc2dcoords((vec3){0,xori,0},(vec3){0,0,0},(vec3){0,0,0},(vec3){0,0,0},30),calc2dcoords((vec3){0,xori,0},(vec3){10,4,5},(vec3){0,0,0},(vec3){0,0,0},30),0xffffffff);
+            platspec_sync();
             clearfb();
             usleep(16);
-            platspec_sync();
     }
 }
 
