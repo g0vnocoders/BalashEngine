@@ -21,4 +21,4 @@ mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
 BalashEngine: $(OBJS) $(ASMOBJS)
-	g++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)

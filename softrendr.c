@@ -17,7 +17,7 @@ void drawline(vec2 start,vec2 end,unsigned int color){
       // upside down, as the 0 for y, is the top left, so we need to invert our line
 
     y1=height-y1;
-    y0-height-y0;
+    y0=height-y0;
 
  
 
@@ -141,18 +141,21 @@ void clearfb(){
     }   
 }
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
+
 #define px pos.x
 #define py pos.y
 #define pz pos.z
+
     pos.x*=fov;
     pos.y*=fov;
     pos.z*=fov;
+
     double tmp=pos.x;
     px=px*asmmath_cos(ori.y)-pz*asmmath_sin(ori.y);
     pz=tmp*asmmath_sin(ori.y)+pz*asmmath_cos(ori.y);
     tmp=py;
     py=py*asmmath_cos(ori.x)+pz*asmmath_sin(ori.x);
-    pz=-1*tmp*asmmath_sin(ori.x)+pz*asmmath_cos(ori.x);
+    pz=-1*(tmp*asmmath_sin(ori.x))+pz*asmmath_cos(ori.x);
     tmp=px;
     px=px*asmmath_cos(ori.z)-py*asmmath_sin(ori.z);
     py=tmp*asmmath_sin(ori.z)+py*asmmath_cos(ori.z);
@@ -168,10 +171,8 @@ vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
     tmp=px;
     px=px*asmmath_cos(camori.z)+py*asmmath_sin(camori.z);
     py=-1*tmp*asmmath_sin(camori.z)+py*asmmath_cos(camori.z);
-    if(pz==0){
-        pz=1;
-    }
     vec2 retval;
+    if(pz==0)pz=1;
     retval.x=px/pz;
     retval.y=py/pz;
     retval.x+=width/2;

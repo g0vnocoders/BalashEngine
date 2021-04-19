@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include <pthread.h>
-#include "linux.h"
+#include "include/linux.h"
 #include "include/keyboard.h"
 extern const unsigned int width,height;
 pthread_t thread;
