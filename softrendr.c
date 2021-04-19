@@ -151,23 +151,23 @@ vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
     pos.z*=fov;
 
     double tmp=pos.x;
-    px=px*asmmath_cos(ori.y)-pz*asmmath_sin(ori.y);
-    pz=tmp*asmmath_sin(ori.y)+pz*asmmath_cos(ori.y);
+    px=px*asmmath_cos(ori.x)-pz*asmmath_sin(ori.x);
+    pz=tmp*asmmath_sin(ori.x)+pz*asmmath_cos(ori.x);
     tmp=py;
-    py=py*asmmath_cos(ori.x)+pz*asmmath_sin(ori.x);
-    pz=-1*(tmp*asmmath_sin(ori.x))+pz*asmmath_cos(ori.x);
+    py=py*asmmath_cos(ori.y)+pz*asmmath_sin(ori.y);
+    pz=-1*(tmp*asmmath_sin(ori.y))+pz*asmmath_cos(ori.y);
     tmp=px;
     px=px*asmmath_cos(ori.z)-py*asmmath_sin(ori.z);
     py=tmp*asmmath_sin(ori.z)+py*asmmath_cos(ori.z);
     px+=-campos.x;
     py+=-campos.y;
     pz+=-campos.z;
-    tmp=px; 
-    px=px*asmmath_cos(camori.y)+pz*asmmath_sin(camori.y);
-    pz=-1*tmp*asmmath_sin(camori.y)+pz*asmmath_cos(camori.y);
+    tmp=px;  //vec3 x=dysfunctional,y=z,z=y
+    px=px*asmmath_cos(camori.x)+pz*asmmath_sin(camori.x);
+    pz=-1*tmp*asmmath_sin(camori.x)+pz*asmmath_cos(camori.x);
     tmp=py;
-    py=py*asmmath_cos(camori.x)-pz*asmmath_sin(camori.x);
-    pz=tmp*asmmath_sin(camori.x)+pz*asmmath_sin(camori.x);
+    py=py*asmmath_cos(camori.y)-pz*asmmath_sin(camori.y);
+    pz=tmp*asmmath_sin(camori.y)+pz*asmmath_sin(camori.y);
     tmp=px;
     px=px*asmmath_cos(camori.z)+py*asmmath_sin(camori.z);
     py=-1*tmp*asmmath_sin(camori.z)+py*asmmath_cos(camori.z);
