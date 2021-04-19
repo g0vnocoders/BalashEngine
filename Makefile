@@ -1,10 +1,11 @@
-SOURCE:=$(wildcard *.c) $(wildcard *.cpp)
-OBJS:=$(SOURCE:.c=.o)
-CPPOBJS:=$(SOURCE:.cpp=.o)
+SOURCE:=$(wildcard *.c) 
+ASM:=$(wildcard *.S) 
+OBJS:=$(SOURCE:.c=.o) 
+ASMOBJS:=$(ASM:.S=.o)
 
 CXXFLAGS=-g 
 CFLAGS=$(CXXFLAGS)
-
+ASFLAGS=-g
 all:BalashEngine Makefile 
-BalashEngine: $(OBJS) $(CPPOBJS)
-	c++ $(OBJS) $(CPPOBJS )-o BalashEngine  -lSDL2 -lpthread
+BalashEngine: $(OBJS) $(ASMOBJS)
+	c++ $(OBJS) $(ASMOBJS) -o BalashEngine  -lSDL2 -lpthread

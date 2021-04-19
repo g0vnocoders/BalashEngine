@@ -1,15 +1,29 @@
 #include <stdio.h>
-
+#include "softrendr.h"
 #include "include/linux.h"
-
+#include "include/types.h"
+#include "include/asmmath.h"
+#include "include/keyboard.h"
+#include <stddef.h>
+#include <SDL2/SDL.h>
 unsigned int* framebuffer;
-const unsigned int width=640,height=480;
-static inline void putpix(unsigned int x,unsigned int y,unsigned int color){
-        unsigned int loc=x+y*width;
-        framebuffer[loc]=color;
-}
+const unsigned int width=1024,height=768;
+vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov);
+double xori;
 int main(){
     framebuffer=platspec_getframebuffer(); 
-    putpix(639,479,0xffffffff);
-    while(1);
+
+    while(1){
+            switch(keybuff_read()){
+                case SDLK_RIGHT:
+                    xori+=1;
+                    break;
+            }
+            drawline(calc2dcoords((vec3){0,xori,0},(vec3){0,0,0},(vec3){0,0,0},(vec3){0,0,0},30),calc2dcoords((vec3){0,xori,0},(vec3){10,4,5},(vec3){0,0,0},(vec3){0,0,0},30),0xffffffff);
+            clearfb();
+            usleep(16);
+            platspec_sync();
+    }
 }
+
+
