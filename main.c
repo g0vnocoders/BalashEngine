@@ -16,11 +16,13 @@ int main(){
     while(1){
             switch(keybuff_read()){
                 case SDLK_RIGHT:
-                    xori+=0.017;
+                    xori+=0.1734;
                     break;
             }           
             clearfb();
-            drawline(calc2dcoords((vec3){0,0,0},(vec3){0,0,0},(vec3){xori,0,0},(vec3){0,0,0},30),calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){xori,0,0},(vec3){0,0,0},30),0xffffffff);
+            drawline(
+            calc2dcoords((vec3){0,0,0},(vec3){0,0,0},(vec3){0,0,xori},(vec3){0,0,0},70),
+            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,0,xori},(vec3){0,0,0},70),0xffffffff);
             platspec_sync();
     }
 }

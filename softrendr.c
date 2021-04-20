@@ -140,41 +140,27 @@ void clearfb(){
         framebuffer[i]=0;
     }   
 }
+#define c(e) asmmath_cos(camori.e)
+#define s(e) asmmath_sin(camori.e)
+#define X *(pos.x-campos.x)
+#define Y *(pos.y-campos.y)
+#define Z *(pos.z-campos.z)
+
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
 
-#define px pos.x
-#define py pos.y
-#define pz pos.z
+
 
     pos.x*=fov;
     pos.y*=fov;
     pos.z*=fov;
-
-    double tmp=pos.x;
-    px=px*asmmath_cos(ori.x)-pz*asmmath_sin(ori.x);
-    pz=tmp*asmmath_sin(ori.x)+pz*asmmath_cos(ori.x);
-    tmp=py;
-    py=py*asmmath_cos(ori.y)+pz*asmmath_sin(ori.y);
-    pz=-1*(tmp*asmmath_sin(ori.y))+pz*asmmath_cos(ori.y);
-    tmp=px;
-    px=px*asmmath_cos(ori.z)-py*asmmath_sin(ori.z);
-    py=tmp*asmmath_sin(ori.z)+py*asmmath_cos(ori.z);
-    px+=-campos.x;
-    py+=-campos.y;
-    pz+=-campos.z;
-    tmp=px;  //vec3 x=dysfunctional,y=z,z=y
-    px=px*asmmath_cos(camori.x)+pz*asmmath_sin(camori.x);
-    pz=-1*tmp*asmmath_sin(camori.x)+pz*asmmath_cos(camori.x);
-    tmp=py;
-    py=py*asmmath_cos(camori.y)-pz*asmmath_sin(camori.y);
-    pz=tmp*asmmath_sin(camori.y)+pz*asmmath_sin(camori.y);
-    tmp=px;
-    px=px*asmmath_cos(camori.z)+py*asmmath_sin(camori.z);
-    py=-1*tmp*asmmath_sin(camori.z)+py*asmmath_cos(camori.z);
+    double px=c(y)*(s(z)Y+c(z)X)-s(y)Z;
+    double py=s(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))+c(x)*(c(z)Y-s(z)X);
+    double pz=c(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))-s(x)*(c(z)Y-s(z)X);
+    vec3 projectplane={0,0,5};
     vec2 retval;
     if(pz==0)pz=1;
-    retval.x=px/pz;
-    retval.y=py/pz;
+    retval.x=(px*width)/(10*width)*3;
+    retval.y=(py*height)/(10*height)*3;
     retval.x+=width/2;
     retval.y+=height/2;
     return retval;
