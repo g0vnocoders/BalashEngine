@@ -21,8 +21,11 @@ int main(){
             }           
             clearfb();
             drawline(
-            calc2dcoords((vec3){0,0,0},(vec3){0,0,0},(vec3){0,0,xori},(vec3){0,0,0},70),
-            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,0,xori},(vec3){0,0,0},70),0xffffffff);
+            calc2dcoords((vec3){0,0,0},(vec3){0,0,0},(vec3){0,xori,0},(vec3){0,0,0},70),
+            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,xori,0},(vec3){0,0,0},70),0xffffffff);
+            drawline(
+            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,xori,0},(vec3){0,0,0},70),
+            calc2dcoords((vec3){0,0,0},(vec3){10,0,0},(vec3){0,xori,0},(vec3){0,0,0},70),0xffffffff);
             platspec_sync();
     }
 }
