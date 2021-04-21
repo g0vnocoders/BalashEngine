@@ -3,6 +3,7 @@
 .globl asmmath_vec3sin
 .globl asmmath_sin
 .globl asmmath_cos
+.globl asmmath_sqrt
 asmmath_floor:
     roundsd $9,%xmm0,%xmm0
     ret
@@ -53,6 +54,14 @@ asmmath_sin:
     movq %xmm0,tmp(%rip)
     fldl tmp(%rip)
     fsin
+    fstpl tmp(%rip)
+    movq tmp(%rip),%xmm0
+    ret
+
+asmmath_sqrt:
+    movq %xmm0,tmp(%rip)
+    fldl tmp(%rip)
+    fsqrt
     fstpl tmp(%rip)
     movq tmp(%rip),%xmm0
     ret

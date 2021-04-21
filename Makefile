@@ -2,7 +2,7 @@ BUILDDIR=build
 OPTIMIZE=-Ofast
 ELFNAME=BalashEngine
 
-CFLAGS= $(OPTIMIZE)  -g#remove -g when release
+CFLAGS= $(OPTIMIZE) -Wall -Wextra  -lpthread -lSDL2 -g#remove -g when release
 ASFLAGS=-g
 
 
@@ -11,7 +11,7 @@ ASM:=$(wildcard *.S)
 OBJS:=$(SOURCE:.c=.o) 
 ASMOBJS:=$(ASM:.S=.o)
 
-all:BalashEngine Makefile domestos
+all:$(BUILDDIR)/$(ELFNAME) Makefile domestos
 
 getexec:#later for bloatstudio
 	@echo $(BUILDDIR)/$(ELFNAME)
@@ -20,5 +20,5 @@ domestos:#really. added domestos XD
 mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
-BalashEngine: $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -lpthread -lSDL2
+$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)

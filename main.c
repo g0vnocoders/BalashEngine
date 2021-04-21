@@ -8,9 +8,9 @@
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
 const unsigned int width=1024,height=768;
-vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov);
+Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov);
 double xori;
-int main(){
+int main(){ 
     framebuffer=platspec_getframebuffer(); 
 
     while(1){
@@ -21,11 +21,11 @@ int main(){
             }           
             clearfb();
             drawline(
-            calc2dcoords((vec3){0,0,0},(vec3){0,0,0},(vec3){0,xori,0},(vec3){0,0,0},70),
-            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,xori,0},(vec3){0,0,0},70),0xffffffff);
+            calc2dcoords(vec3(0,0,0),vec3(0,0,0),vec3(0,xori,0),vec3(0,0,0),70),
+            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,xori,0),vec3(0,0,0),70),0xffffffff);
             drawline(
-            calc2dcoords((vec3){0,0,0},(vec3){10,4,0},(vec3){0,xori,0},(vec3){0,0,0},70),
-            calc2dcoords((vec3){0,0,0},(vec3){10,0,0},(vec3){0,xori,0},(vec3){0,0,0},70),0xffffffff);
+            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,xori,0),vec3(0,0,0),70),
+            calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,xori,0),vec3(0,0,0),70),0xffffffff);
             platspec_sync();
     }
 }

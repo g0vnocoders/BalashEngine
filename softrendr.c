@@ -1,13 +1,14 @@
 #include "softrendr.h"
 #include "include/asmmath.h"
-void putpix(vec2 pos,unsigned int color){
+#include "include/types.h"
+void putpix(Vec2 pos,unsigned int color){
         unsigned int loc=pos.x+pos.y*width;
         if(pos.x<width&&pos.y<height&&pos.x>=0&&pos.y>=0){
             framebuffer[loc]=color;
         }
     
 }
-void drawline(vec2 start,vec2 end,unsigned int color){
+void drawline(Vec2 start,Vec2 end,unsigned int color){
       double y1=end.y;
       double y0=start.y;
       double x0=start.x;
@@ -81,7 +82,7 @@ void drawline(vec2 start,vec2 end,unsigned int color){
 
             {
 
-                  putpix((vec2){px, py},  color);
+                  putpix((Vec2){px, py},  color);
 
                   y += deltay;     // y=mx... but if y starts at y0
 
@@ -113,7 +114,7 @@ void drawline(vec2 start,vec2 end,unsigned int color){
 
             {
 
-                  putpix((vec2){px, py}, color);
+                  putpix((Vec2){px, py}, color);
 
                   x+=deltax;
 
@@ -146,18 +147,16 @@ void clearfb(){
 #define Y *(pos.y-campos.y)
 #define Z *(pos.z-campos.z)
 
-vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov){
-
-
-
+Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov){
+    pos=v3mul(pos,fov);//yes.
     pos.x*=fov;
     pos.y*=fov;
     pos.z*=fov;
     double px=c(y)*(s(z)Y+c(z)X)-s(y)Z;
     double py=s(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))+c(x)*(c(z)Y-s(z)X);
     double pz=c(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))-s(x)*(c(z)Y-s(z)X);
-    vec3 projectplane={0,0,5};
-    vec2 retval;
+    Vec3 projectplane={0,0,5};
+    Vec2 retval;
     if(pz==0)pz=1;
     retval.x=(px*width)/(10*width)*3;
     retval.y=(py*height)/(10*height)*3;
