@@ -148,13 +148,10 @@ void clearfb(){
 #define Z *(pos.z-campos.z)
 
 Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov){
-    pos=v3mul(pos,fov);//yes.
-    pos.x*=fov;
-    pos.y*=fov;
-    pos.z*=fov;
-    double px=c(y)*(s(z)Y+c(z)X)-s(y)Z;
-    double py=s(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))+c(x)*(c(z)Y-s(z)X);
-    double pz=c(x)*(c(y)Z+s(y)*(s(z)Y+c(z)X))-s(x)*(c(z)Y-s(z)X);
+    pos=v3mul(pos,fov); //and we can refactor it anytime soon
+    double px=c(y)*(s(z)Y + c(z)X             )  -s(y)Z;
+    double py=s(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  +c(x)*(c(z)Y-s(z)X);
+    double pz=c(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  -s(x)*(c(z)Y-s(z)X);
     Vec3 projectplane={0,0,5};
     Vec2 retval;
     if(pz==0)pz=1;

@@ -21,4 +21,4 @@ mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
 $(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -fuse-ld=lld

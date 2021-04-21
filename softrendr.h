@@ -1,8 +1,8 @@
 #include "include/types.h"
 
-void putpix(vec2 pos,unsigned int color);
-void drawline(vec2 start,vec2 end,unsigned int color);
-vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,vec3 ori,double fov);
+void putpix(Vec2 pos,unsigned int color);
+void drawline(Vec2 start,Vec2 end,unsigned int color);
+Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov);
 extern unsigned int *framebuffer;
 extern const unsigned int width,height;
 void clearfb();

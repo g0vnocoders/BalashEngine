@@ -12,25 +12,25 @@ Vec3 vec3(scalar x, scalar y, scalar z){
     return ret;
 }
 
-static scalar v2len(Vec2 in){//pythagorean theorem
+ scalar v2len(Vec2 in){//pythagorean theorem
     return asmmath_sqrt(in.x*in.x+in.y*in.y);
 }
-static scalar v3len(Vec3 in){//pythagorean theorem
+ scalar v3len(Vec3 in){//pythagorean theorem
     return asmmath_sqrt(in.x*in.x+in.y*in.y+in.z*in.z);
 }
 
 
-static Vec2 v2add(Vec2 in1,Vec2 in2){//add 2 vectors
+ Vec2 v2add(Vec2 in1,Vec2 in2){//add 2 vectors
     return vec2(in1.x+in2.x,in1.y+in2.y);
 }
-static Vec3 v3add(Vec3 in1,Vec3 in2){//add 2 vectors
+ Vec3 v3add(Vec3 in1,Vec3 in2){//add 2 vectors
     return vec3(in1.x+in2.x,in1.y+in2.y,in1.z+in2.z);
 }
 
-static Vec2 v2mul(Vec3 in,scalar s){
+ Vec2 v2mul(Vec3 in,scalar s){
     return vec2(in.x*s,in.y*s);
 }
-static Vec3 v3mul(Vec3 in,scalar s){
+ Vec3 v3mul(Vec3 in,scalar s){
     return vec3(in.x*s,in.y*s,in.z*s);
 }
 
