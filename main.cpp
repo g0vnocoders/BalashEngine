@@ -1,17 +1,17 @@
 #include <stdio.h>
-#include "softrendr.h"
-#include "include/linux.h"
-#include "include/types.h"
-#include "include/asmmath.h"
-#include "include/keyboard.h"
+#include "softrendr.hpp"
+#include "include/linux.hpp"
+#include "include/types.hpp"
+#include "include/asmmath.hpp"
+#include "include/keyboard.hpp"
 #include <stddef.h>
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
 const unsigned int width=1024,height=768;
-double xori;
-#define deg *0.1734 //lifehack  180deg becomes rads
+double xori; //seriously wtf i think replace word function broke NO use magnifying glass
+#define deg *0.1734 //lifehack  180 deg becomes rads
 int main(){ //commit it push it
-    framebuffer=platspec_getframebuffer(); 
+    framebuffer=(unsigned int*)platspec_getframebuffer(); 
 
     while(1){
             switch(keybuff_read()){
@@ -32,7 +32,6 @@ int main(){ //commit it push it
             platspec_sync();
     }
 }
-
 /*
 objects - dynamic array 
 for(int i=0;i<objects.length){

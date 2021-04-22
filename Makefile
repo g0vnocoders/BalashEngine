@@ -1,14 +1,15 @@
 BUILDDIR=build
 OPTIMIZE=-Ofast
-ELFNAME=BalashEngine
-
-CFLAGS= $(OPTIMIZE) -Wall -Wextra -lpthread -lSDL2 -g#remove -g when release
+ELFNAME=BalashEngine#checkout to branch cpp
+#kill it with sigkill damnit so do killall BalashEngine -9 thanks
+CFLAGS= $(OPTIMIZE)  -lpthread -w -lSDL2 -g  #remove -g when release
 ASFLAGS=-g
 
-
-SOURCE:=$(wildcard *.c) 
+CC=cc
+CXX=c++
+SOURCE:=$(wildcard *.cpp) 
 ASM:=$(wildcard *.S) 
-OBJS:=$(SOURCE:.c=.o) 
+OBJS:=$(SOURCE:.cpp=.o) 
 ASMOBJS:=$(ASM:.S=.o)
 
 all:$(BUILDDIR)/$(ELFNAME) Makefile domestos

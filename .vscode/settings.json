@@ -1,6 +1,6 @@
 {
     "files.associations": {
-        "sdl.h": "c",
-        "asmmath.h": "c"
+        "sdl.hpp": "c",
+        "asmmath.hpp": "c"
     }
 }

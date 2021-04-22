@@ -1,0 +1,2 @@
+import shits
+shits.run()

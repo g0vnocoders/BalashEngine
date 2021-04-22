@@ -1,14 +1,14 @@
-#include "softrendr.h"
-#include "include/asmmath.h"
-#include "include/types.h"
-void putpix(Vec2 pos,unsigned int color){
+#include "softrendr.hpp"
+#include "include/asmmath.hpp"
+#include "include/types.hpp"
+void putpix(vec2 pos,unsigned int color){
         unsigned int loc=pos.x+pos.y*width;
         if(pos.x<width&&pos.y<height&&pos.x>=0&&pos.y>=0){
             framebuffer[loc]=color;
         }
     
 }
-void drawline(Vec2 start,Vec2 end,unsigned int color){
+void drawline(vec2 start,vec2 end,unsigned int color){
       double y1=end.y;
       double y0=start.y;
       double x0=start.x;
@@ -23,7 +23,7 @@ void drawline(Vec2 start,Vec2 end,unsigned int color){
  
 
       int deltax = x1-x0;
-
+//i need a terminal for debug, built in debug is dysfunctional
       int deltay = y1-y0;
 
  
@@ -82,7 +82,7 @@ void drawline(Vec2 start,Vec2 end,unsigned int color){
 
             {
 
-                  putpix((Vec2){px, py},  color);
+                  putpix(vec2(px, py),  color);
 
                   y += deltay;     // y=mx... but if y starts at y0
 
@@ -114,7 +114,7 @@ void drawline(Vec2 start,Vec2 end,unsigned int color){
 
             {
 
-                  putpix((Vec2){px, py}, color);
+                  putpix(vec2(px, py), color);
 
                   x+=deltax;
 
@@ -147,21 +147,19 @@ void clearfb(){
 #define Y *(pos.y-campos.y)
 #define Z *(pos.z-campos.z)
 
-Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,double fov){
-    pos=v3mul(pos,fov); //and we can refactor it anytime soon
+vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov){
+    pos=v3smul(pos,fov); //and we can refactor it anytime soon
     double px=c(y)*(s(z)Y + c(z)X             )  -s(y)Z;
     double py=s(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  +c(x)*(c(z)Y-s(z)X);
     double pz=c(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  -s(x)*(c(z)Y-s(z)X);
-    Vec2 retval;
+    vec2 retval((px*width)/(10*width)*3,(py*height)/(10*height)*3);
     if(pz==0)pz=1;
-    retval.x=(px*width)/(10*width)*3;
-    retval.y=(py*height)/(10*height)*3;
     retval.x+=width/2;
     retval.y+=height/2;
     return retval;
     
 }
-unsigned int/*fb uses rgba, each val is a byte*/ map(double tu, double tv, unsigned int* internalBuffer,Vec2 texd)
+unsigned int/*fb uses rgba, each val is a byte*/ map(double tu, double tv, unsigned int* internalBuffer,vec2 texd)
     {
         // Image is not loaded yet
         if (internalBuffer == 0)

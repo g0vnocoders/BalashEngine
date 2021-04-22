@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <pthread.h>
-#include "include/linux.h"
-#include "include/keyboard.h"
+#include "include/linux.hpp"
+#include "include/keyboard.hpp"
 extern const unsigned int width,height;
 pthread_t thread;
 unsigned int* pix;
@@ -41,7 +41,7 @@ void* platspec_getframebuffer(){
     SDL_Window* win=SDL_CreateWindow("BalashEngine",SDL_WINDOWPOS_UNDEFINED|SDL_WINDOW_OPENGL,SDL_WINDOWPOS_UNDEFINED,width,height,0);
     renderer=SDL_CreateRenderer(win,-1,SDL_RENDERER_ACCELERATED);
     fbtex=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,width,height);
-    pix=malloc(sizeof(unsigned int [width*height]));
+    pix=(unsigned int*)malloc(sizeof(unsigned int [width*height]));
     pthread_create(&thread,NULL,loop,NULL);
     return pix;
 }
