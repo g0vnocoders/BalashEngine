@@ -12,25 +12,26 @@ vec3::vec3(scalar x,scalar y,scalar z)
         this->z = z;
         return;
     }
-scalar vec2::len()
-    { //pythagorean theorem
-        return asmmath_sqrt(this->x * this->x + this->y * this->y);
-    }
 vec2::vec2(scalar x, scalar y)
 {
     this->x = x;
     this->y = y;
     return;
 }
+scalar vec2::len()
+    { //pythagorean theorem
+        return asmmath_sqrt(this->x * this->x + this->y * this->y);
+    }
+
 
 //maybe just change all crap to pointers and no more class returning, too buggy
 //lol it is no OOP actually or just use C++ for tasks like these, c is not designed for oop
 //i wanna create vertices edges faces
 //in.x is better tnan in->x
 
-scalar v3len(vec3 in)
+scalar vec3::len()
 { //pythagorean theorem
-    return asmmath_sqrt(in.x * in.x + in.y * in.y + in.z * in.z);
+    return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
 vec2 v2add(vec2 in1, vec2 in2)
