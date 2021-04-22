@@ -11,6 +11,26 @@ typedef struct Vec3 {
     scalar y;
     scalar z;
 } Vec3;
+typedef struct texture{
+    Vec2 uvcoord;
+    void* texbuff;
+    struct texture* next;
+}Texture;
+typedef struct vert{
+    Vec3 loc;
+    Texture tex;
+    unsigned int color;
+
+    struct vert* next;
+} Vertex;
+
+typedef struct object{ //obj is entitiy
+    Vec3 loc;
+    void* data;
+    Vertex* list;
+    Texture* tex;
+    struct object* next;
+} Obj;
 
 Vec2 vec2(scalar x, scalar y);
 Vec3 vec3(scalar x, scalar y, scalar z);

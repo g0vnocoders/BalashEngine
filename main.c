@@ -8,7 +8,6 @@
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
 const unsigned int width=1024,height=768;
-Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov);
 double xori;
 //#define deg *0.1734 //lifehack  180deg becomes rads
 int main(){ //commit it push it
@@ -22,14 +21,14 @@ int main(){ //commit it push it
             }           
             clearfb();
             drawline(
-            calc2dcoords(vec3(0,0,0),vec3(0,0,0),vec3(0,0,xori),vec3(0,0,0),70),
-            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,0,xori),vec3(0,0,0),70),0xffffffff);
+            calc2dcoords(vec3(0,0,0),vec3(0,0,0),vec3(0,xori,0),110),
+            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,xori,0),110),0xff0000ff);
             drawline(
-            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,0,xori),vec3(0,0,0),70),
-            calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,0,xori),vec3(0,0,0),70),0xffffffff);
+            calc2dcoords(vec3(0,0,0),vec3(10,4,0),vec3(0,xori,0),110),
+            calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,xori,0),110),0xff00ff);
             drawline(
-            calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,0,xori),vec3(0,0,0),70),
-            calc2dcoords(vec3(0,0,0),vec3(10,2,10),vec3(0,0,xori),vec3(0,0,0),70),0xffffffff);
+            calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,xori,0),110),
+            calc2dcoords(vec3(0,0,0),vec3(10,2,10),vec3(0,xori,0),110),0xffff);
             platspec_sync();
     }
 }

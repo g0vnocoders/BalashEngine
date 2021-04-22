@@ -2,7 +2,7 @@ BUILDDIR=build
 OPTIMIZE=-Ofast
 ELFNAME=BalashEngine
 
-CFLAGS= $(OPTIMIZE) -Wall -Wextra  -lpthread -lSDL2 -g#remove -g when release
+CFLAGS= $(OPTIMIZE) -Wall -Wextra  -g#remove -g when release
 ASFLAGS=-g
 
 
@@ -21,4 +21,4 @@ mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
 $(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -fuse-ld=lld
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -fuse-ld=lld  -lpthread -lSDL2

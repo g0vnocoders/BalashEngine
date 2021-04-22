@@ -4,6 +4,7 @@
 .globl asmmath_sin
 .globl asmmath_cos
 .globl asmmath_sqrt
+.globl asmmath_abs
 asmmath_floor:
     roundsd $9,%xmm0,%xmm0
     ret

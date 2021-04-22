@@ -147,12 +147,11 @@ void clearfb(){
 #define Y *(pos.y-campos.y)
 #define Z *(pos.z-campos.z)
 
-Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov){
+Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,double fov){
     pos=v3mul(pos,fov); //and we can refactor it anytime soon
     double px=c(y)*(s(z)Y + c(z)X             )  -s(y)Z;
     double py=s(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  +c(x)*(c(z)Y-s(z)X);
     double pz=c(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  -s(x)*(c(z)Y-s(z)X);
-    Vec3 projectplane={0,0,5};
     Vec2 retval;
     if(pz==0)pz=1;
     retval.x=(px*width)/(10*width)*3;
@@ -162,3 +161,19 @@ Vec2 calc2dcoords(Vec3 campos,Vec3 pos,Vec3 camori,Vec3 ori,double fov){
     return retval;
     
 }
+unsigned int/*fb uses rgba, each val is a byte*/ map(double tu, double tv, unsigned int* internalBuffer,Vec2 texd)
+    {
+        // Image is not loaded yet
+        if (internalBuffer == 0)
+        {
+            return 0xffffffff;//255,255,255,255, basically white
+        }
+        // using a % operator to cycle/repeat the texture if needed
+        /*i have 64bits i use all the 64bits*/long long u = asmmath_abs( (long long)(tu*texd.x) % (long long)texd.x);
+        double v = asmmath_abs( (long long)(tv*texd.y) % (long long)texd.y);
+
+        unsigned long long pos = (u + v * texd.x) * 4;
+
+
+        return *(internalBuffer+pos);
+    }

@@ -14,6 +14,7 @@ void platspec_sync(){
     while(!sync);
 }
 void* loop(void* unused){
+    unused=0;
     while(1){
         sync=1;
         while(sync==1);
