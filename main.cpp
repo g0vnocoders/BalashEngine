@@ -28,7 +28,7 @@ int main(){ //commit it push it
             calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,xori,0),110),0xff00ff);
             drawline(
             calc2dcoords(vec3(0,0,0),vec3(10,0,0),vec3(0,xori,0),110),
-            calc2dcoords(vec3(0,0,0),vec3(10,2,10),vec3(0,xori,0),110),0xffff);
+            calc2dcoords(vec3(0,0,0),vec3(0,0,0),vec3(0,xori,0),110),0xffff);
             platspec_sync();
     }
 }

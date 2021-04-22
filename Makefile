@@ -2,9 +2,9 @@ BUILDDIR=build
 OPTIMIZE=-Ofast
 ELFNAME=BalashEngine#checkout to branch cpp
 #kill it with sigkill damnit so do killall BalashEngine -9 thanks
-CFLAGS= $(OPTIMIZE)  -lpthread -w -lSDL2 -g  #remove -g when release
+CFLAGS= -Ofast  -g  #remove -g when release
 ASFLAGS=-g
-
+#press right arrow to rotate line
 CC=cc
 CXX=c++
 SOURCE:=$(wildcard *.cpp) 
@@ -21,5 +21,5 @@ domestos:#really. added domestos XD
 mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
-$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
+$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS) #put it in here so clang will shut up
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -lpthread -lSDL2 
