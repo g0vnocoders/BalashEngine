@@ -5,13 +5,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include "include/asmmath.hpp"
-vec3::vec3(scalar x,scalar y,scalar z)
-    { //this
-        this->x = x;
-        this->y = y; //"this" keyword in c++ is actually parent pointer
-        this->z = z;
-        return;
-    }
+vec3::vec3(scalar x, scalar y, scalar z)
+{ //this
+    this->x = x;
+    this->y = y; //"this" keyword in c++ is actually parent pointer
+    this->z = z;
+    return;
+}
 vec2::vec2(scalar x, scalar y)
 {
     this->x = x;
@@ -19,43 +19,43 @@ vec2::vec2(scalar x, scalar y)
     return;
 }
 scalar vec2::len()
-    { //pythagorean theorem
-        return asmmath_sqrt(this->x * this->x + this->y * this->y);
-    }
-
-
-//maybe just change all crap to pointers and no more class returning, too buggy
-//lol it is no OOP actually or just use C++ for tasks like these, c is not designed for oop
-//i wanna create vertices edges faces
-//in.x is better tnan in->x
+{ //pythagorean theorem
+    return asmmath_sqrt(this->x * this->x + this->y * this->y);
+}
 
 scalar vec3::len()
 { //pythagorean theorem
     return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
-vec2 v2add(vec2 in1, vec2 in2)
+//maybe just change all crap to pointers and no more class returning, too buggy
+//lol it is no OOP actually or just use C++ for tasks like these, c is not designed for oop
+//i wanna create vertices edges faces
+//in.x is better tnan in->x
+
+vec2 add(vec2 in1, vec2 in2)
 { //add 2 vectors
     return vec2(in1.x + in2.x, in1.y + in2.y);
 }
-vec3 v3add(vec3 in1, vec3 in2)
+vec3 add(vec3 in1, vec3 in2)
 { //add 2 vectors
     return vec3(in1.x + in2.x, in1.y + in2.y, in1.z + in2.z);
 }
 
-vec2 v2smul(vec3 in, scalar s)
+vec2 mul(vec2 in, scalar s)
 {
     return vec2(in.x * s, in.y * s);
 }
-vec3 v3smul(vec3 in, scalar s)
+vec3 mul(vec3 in, scalar s)
 {
     return vec3(in.x * s, in.y * s, in.z * s);
 }
-vec3 v3vmul(vec3 in1, vec3 in2)
+vec3 mul(vec3 in1, vec3 in2)
 {
-    //i think i found a way to overload funcs do parametric check lol
+    //how to set main branch?
+    //git checkout cpp
     /*
-    | i  j  k |    xres  -yres   zres
+    | i  j  k |   xres  -yres   zres
     | x  y  z | = |y z|  |x z|  |x y|  
     | X  Y  Z |   |Y Z|  |X Z|  |X Y|
     xres=yZ-Yz
@@ -68,23 +68,10 @@ vec3 v3vmul(vec3 in1, vec3 in2)
     return vec3(xres, yres, zres);
 }
 
-#define overload_test(val) overload_example(val, typeof(val))
-void overload_example(void *value, int type)
-{
-    switch (type)
-    {
-    case 4: //do some stuff
-        break;
-    }
-}
-//some shits but practically lol. doing matrixes
-//what do you think?
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /*
-//work out here with types
-//so send all edges and create face with it
 
 //Dont forget to free Face! it is malloced!
 Face* edge2face(int num,...){//do it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -150,17 +137,16 @@ int main(){
 extern "C" int shitunittest()
 { //testing it
     vec3 a = vec3(1.5, 1, 1);
-    vec3 b = vec3(2, 2, 2); //it bugs with -o3
+    vec3 b = vec3(2, 2, 2);
     vec3 c = vec3(3, 0, 3);
     vec3 d = vec3(3, 0, 5);
     int shit = isCoplanar(4, a, b, c, d);
-    printf("shits: %d", shit);
-    while (1)
+    printf("shits: %d", shit);//so what to do now? do ohshitgit
+    while (1) 
         ;
-    return 0; //maybe not? malocing vectors...
+    return 0; 
 }
 
-//REALLY?
 
 /*
 float Q_rsqrt( float number )

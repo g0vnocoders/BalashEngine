@@ -14,6 +14,7 @@ class vec3
 public:
     scalar x, y, z;
     vec3(scalar x, scalar y, scalar z);
+    scalar len();
 };
 
 typedef struct texture{
