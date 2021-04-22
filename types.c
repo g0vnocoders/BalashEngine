@@ -1,5 +1,6 @@
 #include "include/asmmath.h"
 #include "include/types.h"
+#include <stdarg.h>
 
 Vec2 vec2(scalar x, scalar y){
     Vec2 ret;
@@ -34,7 +35,48 @@ Vec3 vec3(scalar x, scalar y, scalar z){
     return vec3(in.x*s,in.y*s,in.z*s);
 }
 
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+/////////////////////////////////////////////
 
+
+//Dont forget to free Face! it is malloced!
+Face* edge2face(int num,...){
+    va_list arguments;                     
+    va_start ( arguments, num );           
+
+    Face out=(Edge[2])malloc(sizeof(Edge)*num);
+    for ( int x = 1; x < num; x++ )        
+    {
+        out[x-1]=va_arg ( arguments, Edge ); 
+    }
+
+    va_end ( arguments );                  // Cleans up the list
+ 
+    return sum / num;           
+}
+
+//Dont forget to free Face! it is malloced!
+Face* vec2face(int num,...){
+    va_list arguments;                     
+    va_start ( arguments, num );           
+
+    Edge out[num]=malloc(sizeof(Edge)*num);
+
+    Vec3 lastcoords=va_arg(arguments,Vec3);
+    for ( int x = 1; x < num; x++ )        
+    {
+        out[x-1]=va_arg ( arguments, Edge); 
+    }
+
+    va_end ( arguments );                  // Cleans up the list
+ 
+    return sum / num;           
+}
+
+int main(){
+    vec2face(3,vec3(1,1,1),vec3(1,1,2),vec3(1,2,1));
+}
 //constructor lol
 /*
 int shitunittest(){//testing it
@@ -49,3 +91,20 @@ int shitunittest(){//testing it
 }
 */
 //REALLY?
+
+/*
+float Q_rsqrt( float number )
+{	
+	const float x2 = number * 0.5F;
+	const float threehalfs = 1.5F;
+
+	union {
+		float f;
+		uint32_t i;
+	} conv = {number}; // member 'f' set to value of 'number'.
+	conv.i = 0x5f3759df - ( conv.i >> 1 );
+	conv.f *= threehalfs - x2 * conv.f * conv.f;
+	return conv.f;
+}
+Quake III: Arena code
+*/
