@@ -2,9 +2,9 @@ BUILDDIR=build
 OPTIMIZE=-Ofast
 ELFNAME=BalashEngine#checkout to branch cpp
 #kill it with sigkill damnit so do killall BalashEngine -9 thanks
-CFLAGS= -Ofast  -g  #remove -g when release
+CFLAGS= $(OPTIMIZE)   -g  #remove -g when release
 ASFLAGS=-g
-#press right arrow to rotate line
+
 CC=cc
 CXX=c++
 SOURCE:=$(wildcard *.cpp) 
@@ -12,7 +12,10 @@ ASM:=$(wildcard *.S)
 OBJS:=$(SOURCE:.cpp=.o) 
 ASMOBJS:=$(ASM:.S=.o)
 
-all:$(BUILDDIR)/$(ELFNAME) Makefile domestos
+run:
+	./$(BUILDDIR)/$(ELFNAME)
+
+all:$(BUILDDIR)/$(ELFNAME) Makefile domestos run
 
 getexec:#later for bloatstudio
 	@echo $(BUILDDIR)/$(ELFNAME)
@@ -21,5 +24,5 @@ domestos:#really. added domestos XD
 mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
-$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS) #put it in here so clang will shut up
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -lpthread -lSDL2 
+$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
+	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS) -lpthread -lSDL2 #put it in here so cl

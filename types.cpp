@@ -28,11 +28,6 @@ scalar vec3::len()
     return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
 
-//maybe just change all crap to pointers and no more class returning, too buggy
-//lol it is no OOP actually or just use C++ for tasks like these, c is not designed for oop
-//i wanna create vertices edges faces
-//in.x is better tnan in->x
-
 vec2 add(vec2 in1, vec2 in2)
 { //add 2 vectors
     return vec2(in1.x + in2.x, in1.y + in2.y);
@@ -41,6 +36,15 @@ vec3 add(vec3 in1, vec3 in2)
 { //add 2 vectors
     return vec3(in1.x + in2.x, in1.y + in2.y, in1.z + in2.z);
 }
+
+bool isColinear(vec2 in1, vec2 in2){
+    return (in1.x/in2.x == in1.y/in2.y);
+}
+
+bool isColinear(vec3 in1, vec3 in2){
+    return (in1.x/in2.x == in1.y/in2.y) && (in1.y/in2.y == in1.z/in2.z);
+}
+
 
 vec2 mul(vec2 in, scalar s)
 {
@@ -71,6 +75,7 @@ vec3 mul(vec3 in1, vec3 in2)
 /////////////////////////////////////////////
 /////////////////////////////////////////////
 /////////////////////////////////////////////
+
 /*
 
 //Dont forget to free Face! it is malloced!
@@ -111,6 +116,7 @@ Face* vec2face(int num,...){
 }
 */
 //returns size of mul. if it is ō - coplanar
+/*
 int isCoplanar(int num, ...)
 {
     va_list arguments; //do it later do
@@ -125,7 +131,7 @@ int isCoplanar(int num, ...)
     va_end(arguments); // Cleans up the list
 
     return v3len(lastv);
-}
+}*/
 /*
 
 int main(){
@@ -140,8 +146,8 @@ extern "C" int shitunittest()
     vec3 b = vec3(2, 2, 2);
     vec3 c = vec3(3, 0, 3);
     vec3 d = vec3(3, 0, 5);
-    int shit = isCoplanar(4, a, b, c, d);
-    printf("shits: %d", shit);//so what to do now? do ohshitgit
+    //int shit = isCoplanar(4, a, b, c, d);
+    //printf("shits: %d", shit);//so what to do now? do ohshitgit
     while (1) 
         ;
     return 0; 

@@ -148,7 +148,7 @@ void clearfb(){
 #define Z *(pos.z-campos.z)
 
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov){
-    pos=v3smul(pos,fov); //and we can refactor it anytime soon
+    pos=mul(pos,fov); //and we can refactor it anytime soon
     double px=c(y)*(s(z)Y + c(z)X             )  -s(y)Z;
     double py=s(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  +c(x)*(c(z)Y-s(z)X);
     double pz=c(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  -s(x)*(c(z)Y-s(z)X);

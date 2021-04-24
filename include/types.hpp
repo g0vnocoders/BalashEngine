@@ -9,6 +9,7 @@ class vec2 {
     scalar len();
 
 } ;
+//okay so how to make cpp the main branch
 class vec3
 {
 public:
@@ -42,13 +43,11 @@ typedef struct object{ //obj is entitiy
 
 scalar v2len(vec2 in);
 scalar v3len(vec3 in);
-
-//no stop. quicker way
-vec2 v2add(vec2 in1,vec2 in2);
-vec3 v3add(vec3 in1,vec3 in2);
-vec2 v2smul(vec3 in,scalar s);
-vec3 v3smul(vec3 in,scalar s);
-vec3 v3vmul(vec3 in1,vec3 in2);
+vec2 add(vec2 in1,vec2 in2);
+vec3 add(vec3 in1,vec3 in2);
+vec2 mul(vec2 in,scalar s);
+vec3 mul(vec3 in,scalar s);
+vec3 mul(vec3 in1,vec3 in2);
 
 
 #endif
