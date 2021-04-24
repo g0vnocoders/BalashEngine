@@ -122,10 +122,12 @@ int isCoplanar(int num, ...)
     va_list arguments; //do it later do
     va_start(arguments, num);
 
-    vec3 lastv = va_arg(arguments, vec3);
+    vec3* lastv = va_arg(arguments, vec3*);
+    vec3 last(0,0,0);
     for (int x = 1; x < num; x++)
     {
-        lastv = v3vmul(lastv, va_arg(arguments, vec3));
+        last = mul(*lastv, *(va_arg(arguments, vec3*)));
+        lastv=&last;
     }
 
     va_end(arguments); // Cleans up the list
