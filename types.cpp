@@ -116,51 +116,15 @@ int isCoplanar(int num, ...)
     va_list arguments; //do it later do
     va_start(arguments, num);
 
-    vec3 lastv = va_arg(arguments, vec3);
+    vec3* lastv = va_arg(arguments, vec3*);
+    vec3 last(0,0,0);
     for (int x = 1; x < num; x++)
     {
-        lastv = v3vmul(lastv, va_arg(arguments, vec3));
+        last = mul(*lastv, *(va_arg(arguments, vec3*)));
+        lastv=&last;
     }
 
     va_end(arguments); // Cleans up the list
 
-    return v3len(lastv);
+    return last.len();
 }
-/*
-
-int main(){
-    vec2face(3,vec3(1,1,1),vec3(1,1,2),vec3(1,2,1));
-}
-//constructor lol
-*/
-//wow it runs lol. segmentation fault
-extern "C" int shitunittest()
-{ //testing it
-    vec3 a = vec3(1.5, 1, 1);
-    vec3 b = vec3(2, 2, 2);
-    vec3 c = vec3(3, 0, 3);
-    vec3 d = vec3(3, 0, 5);
-    int shit = isCoplanar(4, a, b, c, d);
-    printf("shits: %d", shit);//so what to do now? do ohshitgit
-    while (1) 
-        ;
-    return 0; 
-}
-
-
-/*
-float Q_rsqrt( float number )
-{	
-	const float x2 = number * 0.5F;
-	const float threehalfs = 1.5F;
-
-	union {
-		float f;
-		uint32_t i;
-	} conv = {number}; // member 'f' set to value of 'number'.
-	conv.i = 0x5f3759df - ( conv.i >> 1 );
-	conv.f *= threehalfs - x2 * conv.f * conv.f;
-	return conv.f;
-}
-Quake III: Arena code
-*/

@@ -8,7 +8,6 @@
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
 const unsigned int width=1024,height=768;
-double xori; //seriously wtf i think replace word function broke NO use magnifying glass
 #define deg *0.1734 //lifehack  180 deg becomes rads
 int main(){ //commit it push it
     framebuffer=(unsigned int*)platspec_getframebuffer(); 
@@ -17,8 +16,11 @@ int main(){ //commit it push it
                 case SDLK_RIGHT:
                     xori+=1 deg; //1 degree=roughly 0.0174533 rads STOP. i'll add some shits here
                     break;
-            }           
-           ;
+            }      
+            clearfb();
+
+
+            platspec_sync();
     }
 
 }
