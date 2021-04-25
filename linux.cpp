@@ -13,6 +13,11 @@ void platspec_sync(){
     sync=0;
     while(!sync);
 }
+//
+void platspec_creategamethread(){
+
+    
+}
 void* loop(void* unused){
     unused=0;
     while(1){

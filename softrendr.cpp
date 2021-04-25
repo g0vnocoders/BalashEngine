@@ -171,7 +171,7 @@ unsigned int/*fb uses rgba, each val is a byte*/ map(double tu, double tv, unsig
         double v = asmmath_abs( (long long)(tv*texd.y) % (long long)texd.y);
 
         unsigned long long pos = (u + v * texd.x) * 4;
-
+//you wanted to did something here
 
         return *(internalBuffer+pos);
     }

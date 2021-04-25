@@ -9,7 +9,6 @@ class vec2 {
     scalar len();
 
 } ;
-//okay so how to make cpp the main branch
 class vec3
 {
 public:
@@ -31,16 +30,23 @@ typedef struct vert{
     struct vert* next;
 } Vertex;
 
-typedef struct object{ //obj is entitiy
+typedef struct object{
     vec3 loc;
     void* data;
     Vertex* list;
     Texture* tex;
     struct object* next;
-} Obj;
-
-
-
+} Obj; 
+typedef vec3 edge[2];//typedef is pretty brainfuck sometimes
+class face{
+    public://well ok
+    edge * faceedge;//uhhh wdym
+};
+//lol
+//why not just put it as src tho
+//wildcard except main
+//and main like BalashGame
+//engine as libbalash.so uhhh maybe
 scalar v2len(vec2 in);
 scalar v3len(vec3 in);
 vec2 add(vec2 in1,vec2 in2);

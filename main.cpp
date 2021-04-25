@@ -7,18 +7,14 @@
 #include <stddef.h>
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
-const unsigned int width=1024,height=768;
+extern "C" const unsigned int width=1024,height=768;//lollll
 #define deg *0.1734 //lifehack  180 deg becomes rads
-int main(){ //commit it push it
+int main(){ //commit it push it 
     framebuffer=(unsigned int*)platspec_getframebuffer(); 
-
+    //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
     while(1){
-            switch(keybuff_read()){
-                case SDLK_RIGHT:
-                    xori+=1 deg; //1 degree=roughly 0.0174533 rads STOP. i'll add some shits here
-                    break;
-            }      
             clearfb();
+
             platspec_sync();
     }
 }
