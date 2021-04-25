@@ -6,7 +6,9 @@
         "*.tcc": "cpp",
         "iomanip": "cpp",
         "istream": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "fstream": "cpp",
+        "streambuf": "cpp"
     },
     "python.pythonPath": "/usr/bin/python"
 }

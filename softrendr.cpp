@@ -2,8 +2,8 @@
 #include "include/asmmath.hpp"
 #include "include/types.hpp"
 void putpix(vec2 pos,unsigned int color){
-        unsigned int loc=pos.x+pos.y*width;
-        if(pos.x<width&&pos.y<height&&pos.x>=0&&pos.y>=0){
+        unsigned int loc=pos.x+pos.y*screenwidth;
+        if(pos.x<screenwidth&&pos.y<screenheight&&pos.x>=0&&pos.y>=0){
             framebuffer[loc]=color;
         }
     
@@ -17,8 +17,8 @@ void drawline(vec2 start,vec2 end,unsigned int color){
 
       // upside down, as the 0 for y, is the top left, so we need to invert our line
 
-    y1=height-y1;
-    y0=height-y0;
+    y1=screenheight-y1;
+    y0=screenheight-y0;
 
  
 
@@ -137,7 +137,7 @@ void drawline(vec2 start,vec2 end,unsigned int color){
 }
 void clearfb(){
     //portabillity!!1!!!!!!!!eleven
-    for(unsigned long long i=0;i<width*height;++i){
+    for(unsigned long long i=0;i<screenwidth*screenheight;++i){
         framebuffer[i]=0;
     }   
 }
@@ -152,10 +152,10 @@ vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov){
     double px=c(y)*(s(z)Y + c(z)X             )  -s(y)Z;
     double py=s(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  +c(x)*(c(z)Y-s(z)X);
     double pz=c(x)*(c(y)Z + s(y)*(s(z)Y+c(z)X))  -s(x)*(c(z)Y-s(z)X);
-    vec2 retval((px*width)/(10*width)*3,(py*height)/(10*height)*3);
+    vec2 retval((px*screenwidth)/(10*screenwidth)*3,(py*screenheight)/(10*screenheight)*3);
     if(pz==0)pz=1;
-    retval.x+=width/2;
-    retval.y+=height/2;
+    retval.x+=screenwidth/2;
+    retval.y+=screenheight/2;
     return retval;
     
 }

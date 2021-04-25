@@ -5,4 +5,4 @@ void drawline(vec2 start,vec2 end,unsigned int color);
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov);
 extern unsigned int *framebuffer;
 void clearfb();
-extern "C" extern unsigned int width,hei
+ extern const unsigned int screenwidth,screenheight;

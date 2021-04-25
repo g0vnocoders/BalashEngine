@@ -172,3 +172,20 @@ float Q_rsqrt( float number )
 }
 Quake III: Arena code
 */
+//what ur operator does? in c++ you can define custom operators
+//stick texture to every face. then will try to renderer more complex objects with multi faces
+unsigned int gettexpix(unsigned int* tex,unsigned long long texw,unsigned long long texh,double tu, double tv)
+{
+        // Image is not loaded yet
+        if (tex == 0)
+        {
+            return 0xffffffff;
+        }
+        // using a % operator to cycle/repeat the texture if needed
+        int u = asmmath_abs((int) (tu*texw) % texw);
+        int v = asmmath_abs((int) (tv*texh) % texh);
+        // i have 64 bits, i use all the 64 bits
+        unsigned long long pos = (u + v * texw) * 4;
+        //raw pixel format, 8 bits for red,green,blue,alpha(transparency)
+        return *(unsigned int*)(tex+pos);
+}

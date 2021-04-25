@@ -7,11 +7,18 @@
 #include <stddef.h>
 #include <SDL2/SDL.h>
 unsigned int* framebuffer;
-extern "C" const unsigned int width=1024,height=768;//lollll
+const unsigned int screenwidth=1024,screenheight=768;//lollll
 #define deg *0.1734 //lifehack  180 deg becomes rads
+void maingamethread(void* unused){
+    while(1){
+        platspec_sleep(0.05);
+    }
+
+}
 int main(){ //commit it push it 
     framebuffer=(unsigned int*)platspec_getframebuffer(); 
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
+    platspec_creategamethread(maingamethread);
     while(1){
             clearfb();
 
