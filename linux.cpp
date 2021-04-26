@@ -137,7 +137,7 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     size_t imgbytes = widthin * heightin;
     unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes);
     memset(texture, 0, imgbytes);
-    if(!heightin || !widthin){
+    if(heightin==0 || widthin==0){
         heightin=height;
         widthin=width;
     }
@@ -145,7 +145,7 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     {
         for (int x = 0; x < widthin; x++)
         {
-            unsigned int * ptr = (unsigned int *)(&row_pointers[y%width][x%height * 4]);
+            unsigned int * ptr = (unsigned int *)(&row_pointers[y%height][x%width * 4]);
             *(texture+y*widthin+x)=__builtin_bswap32(*ptr);
         }
     }

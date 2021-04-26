@@ -12,15 +12,15 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "gcc - Build and debug active file",
+            "name": "g++ - Build and debug active files",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/BalashEngine",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "sourceFileMap": {
-                "${workspaceFolder}/build/BalashEngine": "${workspaceFolder}/test.c",
+                "${workspaceFolder}/build/BalashEngine": "main.cpp",
             },
             "environment": [],
             "externalConsole": false,
