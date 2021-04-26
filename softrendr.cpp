@@ -1,7 +1,8 @@
 #include "softrendr.hpp"
 #include "include/asmmath.hpp"
 #include "include/types.hpp"
-void putpix(vec2 pos,unsigned int color){
+#include <stdexcept>
+inline void putpix(vec2 pos,unsigned int color){
         unsigned int loc=pos.x+pos.y*screenwidth;
         if(pos.x<screenwidth&&pos.y<screenheight&&pos.x>=0&&pos.y>=0){
             framebuffer[loc]=color;
@@ -134,6 +135,9 @@ void drawline(vec2 start,vec2 end,unsigned int color){
 
       }
     
+}
+void drawtri(face tri){
+      
 }
 void clearfb(){
     //portabillity!!1!!!!!!!!eleven

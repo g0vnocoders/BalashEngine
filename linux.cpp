@@ -15,8 +15,8 @@ void platspec_sync(){
     while(!syncvar);
 }
 //
-void platspec_creategamethread(void(*func)(void*)){
-
+void platspec_creategamethread(void*(*func)(void*)){
+    pthread_create(&thread,NULL,func,NULL);
     
 }
 void platspec_sleep(double dur){

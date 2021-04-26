@@ -8,7 +8,8 @@
         "istream": "cpp",
         "ostream": "cpp",
         "fstream": "cpp",
-        "streambuf": "cpp"
+        "streambuf": "cpp",
+        "stdexcept": "cpp"
     },
     "python.pythonPath": "/usr/bin/python"
 }

@@ -1,6 +1,8 @@
+
 #ifndef _types_
 #define _types_
 typedef double scalar;
+
 class vec2 {
     public:
     scalar x;
@@ -16,37 +18,17 @@ public:
     vec3(scalar x, scalar y, scalar z);
     scalar len();
 };
-
-typedef struct texture{
-    vec2 uvcoord;
-    void* texbuff;
-    struct texture* next;
-}Texture;
-typedef struct vert{
-    vec3 loc;
-    Texture tex;
-    unsigned int color;
-
-    struct vert* next;
-} Vertex;
-
-typedef struct object{
-    vec3 loc;
-    void* data;
-    Vertex* list;
-    Texture* tex;
-    struct object* next;
-} Obj; 
+//am i lagging? do u see it?
 typedef vec3 edge[2];//typedef is pretty brainfuck sometimes
 class face{
     public://well ok
     edge * faceedge;//uhhh wdym
+    vec2 uv;    //colour wil be filled instead of texture if texture is null
+    unsigned int *tex,colour;
+    face operator[](unsigned int n);//c++ magic
+    face* next;
 };
-//lol
-//why not just put it as src tho
-//wildcard except main
-//and main like BalashGame
-//engine as libbalash.so uhhh maybe
+
 scalar v2len(vec2 in);
 scalar v3len(vec3 in);
 vec2 add(vec2 in1,vec2 in2);

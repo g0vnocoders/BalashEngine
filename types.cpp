@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "include/asmmath.hpp"
+#include <stdexcept>
 vec3::vec3(scalar x, scalar y, scalar z)
 { //this
     this->x = x;
@@ -72,48 +73,48 @@ vec3 mul(vec3 in1, vec3 in2)
     return vec3(xres, yres, zres);
 }
 
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
+//btw. separate vectors from faces
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
 
-/*
+//invoking (faceobj)[] calls this function 
+face face::operator[](unsigned int n){ //look closely as i perform c++ magic  yeah
+    unsigned int counter;
+    face* it;
+    std::exception e;
+    for(int i=0;counter<i;++i){
+        it=it->next;
+        if(!it){
+
+            throw std::out_of_range("it->next is NULL!!!!!!");//throw exception if next is nonexistant, so we won't cause segfaults
+        }
+    } //boom, dynamic linked list array 
+    return *it;
+}
+
+
 
 //Dont forget to free Face! it is malloced!
-Face* edge2face(int num,...){//do it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+face* edge2face(int num,...){//do it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     va_list arguments;                     
     va_start ( arguments, num );           
 
-    Face out=(Edge[2])malloc(sizeof(Edge)*num);//and it especially - linter complains
+    face* out=(face*)malloc(sizeof(face));//and it especially - linter complains
     for ( int x = 1; x < num; x++ )        
     {
-        out[x-1]=va_arg ( arguments, Edge ); 
+        out->faceedge=va_arg ( arguments, edge* ); 
+        out->next=(face*)malloc(sizeof(face));//thanks lol. now i am here for hour
+        out=out->next;
     }
 
     va_end ( arguments );                  // Cleans up the list
  
-    return sum / num;           
-}
+    return out;           
+}//hello?
 /*
 //or better use this
 //but this needs some algorythm that detects complanar edges
 
-//Dont forget to free Face! it is malloced!
-Face* vec2face(int num,...){
-    va_list arguments;                     
-    va_start ( arguments, num );           
-
-    Edge out[num]=malloc(sizeof(Edge)*num);
-
-    vec3 lastcoords=va_arg(arguments,vec3);
-    for ( int x = 1; x < num; x++ )        
-    {
-        out[x-1]=va_arg ( arguments, Edge); 
-    }
-
-    va_end ( arguments );                  // Cleans up the list
- 
-    return sum / num;           
-}
 */
 //returns size of mul. if it is ō - coplanar
 /*
@@ -136,18 +137,19 @@ int isCoplanar(int num, ...)
 }*/
 /*
 
-int main(){
-    vec2face(3,vec3(1,1,1),vec3(1,1,2),vec3(1,2,1));
-}
-//constructor lol
+
 */
-//wow it runs lol. segmentation fault
+
+
 extern "C" int shitunittest()
 { //testing it
-    vec3 a = vec3(1.5, 1, 1);
-    vec3 b = vec3(2, 2, 2);
-    vec3 c = vec3(3, 0, 3);
-    vec3 d = vec3(3, 0, 5);
+    edge ab = {vec3(1,1,1),vec3(1,1,2)};
+    edge bc = {vec3(1,1,2),vec3(1,2,1)};
+    edge ac = {vec3(1,2,1),vec3(1,1,1)};
+    face* myface = edge2face(3,ab,bc,ac);//hmmmm.  this variant. maybe this i think
+    //myface->tex=
+    //move utils to platspec. ? no such dir
+
     //int shit = isCoplanar(4, a, b, c, d);
     //printf("shits: %d", shit);//so what to do now? do ohshitgit
     while (1) 
