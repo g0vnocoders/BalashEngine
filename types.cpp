@@ -6,6 +6,9 @@
 #include <cstdlib>
 #include "include/asmmath.hpp"
 #include <stdexcept>
+face::face(edge* faceedge):uv(0,0){
+    this->faceedge=faceedge;
+}
 vec3::vec3(scalar x, scalar y, scalar z)
 { //this
     this->x = x;

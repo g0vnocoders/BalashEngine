@@ -27,6 +27,7 @@ class face{
     unsigned int *tex,colour;
     face operator[](unsigned int n);//c++ magic
     face* next;
+    face(edge* faceedge);
 };
 
 scalar v2len(vec2 in);

@@ -136,8 +136,29 @@ void drawline(vec2 start,vec2 end,unsigned int color){
       }
     
 }
+double edgefunc(vec2 a,vec2 b,vec2 p){
+      return ((p.x-a.x)*(b.y-a.y)+(p.y-a.y)*(b.x-a.x));
+}
 void drawtri(face tri){
-      
+      extern vec3 camera_pos,camera_orientation;
+      extern double game_fov;
+      vec2 v0=calc2dcoords(camera_pos,tri.faceedge[0][0],camera_orientation,game_fov);
+      vec2 v1=calc2dcoords(camera_pos,tri.faceedge[1][0],camera_orientation,game_fov);
+      vec2 v2=calc2dcoords(camera_pos,tri.faceedge[2][0],camera_orientation,game_fov);
+      for (long long x = 0; x < screenwidth; x++) {
+            for (long long y = 0; y < screenheight; y++) {
+                vec2 p(0,0);
+                p.x = x + 0.5f; p.y = y + 0.5f;
+                double w0 = edgefunc(v1, v2, p);
+                double w1 = edgefunc(v2, v0, p);
+                double w2 = edgefunc(v0, v1, p);
+                if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                        if(!tri.tex)
+                              putpix(vec2(x, y), tri.colour);
+                        else  std::cout <<"WARNING: UNIMPLEMENTED CODE AHEAD\n";
+                }
+            }
+      }
 }
 void clearfb(){
     //portabillity!!1!!!!!!!!eleven

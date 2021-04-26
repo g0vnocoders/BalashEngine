@@ -40,6 +40,8 @@ int main(){ //commit it push it
             platspec_sync();//SSSHHHIIIITTTT bloatshare
 
     }
+        __builtin_unreachable();
+
 }
 /*
 objects - dynamic array 
