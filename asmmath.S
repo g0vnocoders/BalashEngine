@@ -5,6 +5,8 @@
 .globl asmmath_cos
 .globl asmmath_sqrt
 .globl asmmath_abs
+.globl asmmath_min
+.globl asmmath_max
 asmmath_floor:
     roundsd $9,%xmm0,%xmm0
     ret
@@ -66,3 +68,14 @@ asmmath_sqrt:
     fstpl tmp(%rip)
     movq tmp(%rip),%xmm0
     ret
+retc:
+    ret
+asmmath_min:
+    comisd %xmm1,%xmm0
+    jbe retc
+    movq %xmm1, %xmm0
+asmmath_max:
+    comisd %xmm0,%xmm1
+    jbe retc
+    movq %xmm1, %xmm0
+    

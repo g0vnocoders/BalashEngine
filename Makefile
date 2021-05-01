@@ -4,13 +4,16 @@ ELFNAME=BalashEngine#checkout to branch cpp
 
 CXX=g++
 LIBS=`pkg-config --libs --cflags libpng`
+
 CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g#remove -g when release
+CPPFLAGS= $(OPTIMIZE) -g#remove -g when release
 ASFLAGS=-g
 
 SOURCE:=$(wildcard *.cpp) 
 ASM:=$(wildcard *.S) 
 OBJS:=$(SOURCE:.cpp=.o) 
 ASMOBJS:=$(ASM:.S=.o)
+
 default:all run
 so:
 	c++ -shared -o $(BUILDDIR)/libbalash.so -fPIC $(CFLAGS) $(SOSOURCE) 

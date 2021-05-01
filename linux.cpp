@@ -60,7 +60,7 @@ void* platspec_getframebuffer(){
 
 #ifndef _UTIL_CPP //disable it for now so it'll compile
 
-//actually put this in linux.c cuz this is platform specific, it's not like the nintendo switch have libpng preinstalled for your homebrew convenience
+//don't forget to free, it is malloced
 unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, unsigned int heightin)
 {
 
@@ -134,19 +134,23 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     png_read_image(png_ptr, row_pointers);
     fclose(fp);
 
-    size_t imgbytes = widthin * heightin;
-    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes);
-    memset(texture, 0, imgbytes);
+
     if(heightin==0 || widthin==0){
         heightin=height;
         widthin=width;
     }
+    size_t imgbytes = widthin * heightin;
+    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+2);
+    memset(texture, 0, imgbytes);
+
+    *(texture)=widthin;
+    *(texture+1)=heightin;
     for (int y = 0; y < heightin; y++)
     {
         for (int x = 0; x < widthin; x++)
         {
             unsigned int * ptr = (unsigned int *)(&row_pointers[y%height][x%width * 4]);
-            *(texture+y*widthin+x)=__builtin_bswap32(*ptr);
+            *(2+texture+y*widthin+x)=__builtin_bswap32(*ptr);
         }
     }
     printf("DONE!\n");
