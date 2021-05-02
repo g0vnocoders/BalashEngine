@@ -91,14 +91,14 @@ int main(int argc, char **argv)
 { //commit it push it
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
-    unsigned int *image = platspec_loadTexture("tux.png",0,0);
+    unsigned int *image = platspec_loadTexture("test.png",0,0);
     platspec_creategamethread(maingamethread);
 
     vec2 a = vec2(0, 0);
     vec2 b = vec2(50, 50);
     vec2 c = vec2(100, 0);
     matrix3 tr = {
-        {1.0, 0, 1.0},
+        {1.0, 0, 0.0},
         {0.0, 1.0, 00.0},
         {0.0, 0.0, 0.0},
     };
@@ -138,11 +138,11 @@ int main(int argc, char **argv)
     unsigned int * image2=matrixImg(image,tr);
     while (1)
     {
-        for (int x = 0; x < image2[0]; x++)
+        for (int x = 0; x < image[0]; x++)
         {
-            for (unsigned int y = 0; y < image2[1]; y++)
+            for (unsigned int y = 0; y < image[1]; y++)
             {
-               putpix(vec2(x, y), *(image2 + y * image2[0] + x+8));
+               putpix(vec2(x, y), image [y * image[0] + x]);
             }
         }
         /*for (int x = 0; x < image[0]; x++)

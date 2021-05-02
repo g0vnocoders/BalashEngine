@@ -139,21 +139,20 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
         heightin=height;
         widthin=width;
     }
-    size_t imgbytes = widthin * heightin +8;
+    size_t imgbytes = widthin * heightin + 8;
     unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+2);
-    memset(texture, 0, imgbytes);
+    memset(texture, 0, imgbytes*4);
 
     texture[0]=widthin;
     texture[1]=heightin;
-    for (int y = 0; y < heightin; y++)
+    for (unsigned int y = 0; y < heightin; y++)
     {
-        for (int x = 0; x < widthin; x++)
+        for (unsigned int x = 0; x < widthin; x++)
         {
-            unsigned int * ptr = (unsigned int *)(&row_pointers[y%height][x%width * 4]);
-            *(8+texture+y*widthin+x)=__builtin_bswap32(*ptr);
+            unsigned int * ptr = (unsigned int *)(&row_pointers[y%heightin][(x%widthin)*4]);
+            texture[y*widthin+x+2]=__builtin_bswap32(*ptr);
         }
     }
-    printf("DONE!\n");
 
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     free(row_pointers);
