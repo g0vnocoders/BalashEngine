@@ -7,6 +7,7 @@
 #include "include/camera.hpp"
 #include "include/constants.hpp"
 #include <stddef.h>
+#include <algorithm>
 #include <SDL2/SDL.h>
 #include <iostream>
 unsigned int *framebuffer;
@@ -39,9 +40,10 @@ vec2 mulm3andv2(matrix3 m, vec2 v)
     [y] [d][e][f] = [dy+ey+f]
         [#][#][#] not used
     */
-    scalar x = m[0][0] * v.x + m[0][1] * v.y + m[0][2];
-    scalar y = m[1][0] * v.x + m[1][1] * v.y + m[1][2];
-    return vec2(x, y);
+   vec2 ret(0,0);
+    ret.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2];
+    ret.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2];
+    return ret;
 }
 //TODO:i like to move it move it
 unsigned int *matrixImg(unsigned int *image, matrix3 m)
@@ -57,7 +59,6 @@ unsigned int *matrixImg(unsigned int *image, matrix3 m)
         mulm3andv2(m, vec2(0,height)),   //to get min and max
         mulm3andv2(m, vec2(width,height))//of result image
     };
-
     for(int i=0;i<4;i++){
         minx=asmmath_min(corners[i].x,minx);
         miny=asmmath_min(corners[i].y,miny);
@@ -66,21 +67,21 @@ unsigned int *matrixImg(unsigned int *image, matrix3 m)
     }
     unsigned int outwidth = asmmath_floor(maxx-minx+0.5);//+0.5 makes round from floor 
     unsigned int outheight =asmmath_floor(maxy-miny+0.5);
-
-    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * (outwidth*outheight+2));
+    unsigned int *texture = (unsigned int *)malloc(4 * (outwidth*outheight+2));
 
     texture[0]=outwidth;
     texture[1]=outheight;
-    for (int x = 0; x < width; x++)
+    for (unsigned int x = 0; x < width; x++)
     {
-        for (int y = 0; y < height; y++)
+        for (unsigned int y = 0; y < height; y++)
         {
             vec2 pos=mulm3andv2(m, vec2(x,y));
             //pointer +2 offset +x + y*width
             //putpix(pos, rgba2rgb(*(image+2 + y * image[0] + x)));
-            unsigned int px=(unsigned int)asmmath_floor(pos.x+0.5-minx);
-            unsigned int py=(unsigned int)asmmath_floor((pos.y-miny)*width+0.5)
-            *(2+texture+px+py)=*(image + y * width + x);
+            unsigned int px=(unsigned int)asmmath_floor(pos.x-minx);
+            unsigned int py=(unsigned int)asmmath_floor((pos.y-miny)+0.5);
+
+           texture[px+py*outwidth+2]=image[y*width+x+2];
         }
     }
     return texture;
@@ -90,15 +91,15 @@ int main(int argc, char **argv)
 { //commit it push it
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
-    unsigned int *image = platspec_loadTexture("tux.png");
+    unsigned int *image = platspec_loadTexture("tux.png",0,0);
     platspec_creategamethread(maingamethread);
 
     vec2 a = vec2(0, 0);
     vec2 b = vec2(50, 50);
     vec2 c = vec2(100, 0);
     matrix3 tr = {
-        {1.0, -0.5, 0.0},
-        {0.0, 1.0, 200.0},
+        {1.0, 0, 1.0},
+        {0.0, 1.0, 00.0},
         {0.0, 0.0, 0.0},
     };
 /*
@@ -137,12 +138,11 @@ int main(int argc, char **argv)
     unsigned int * image2=matrixImg(image,tr);
     while (1)
     {
-        //camera_render();
         for (int x = 0; x < image2[0]; x++)
         {
-            for (int y = 0; y < image2[1]; y++)
+            for (unsigned int y = 0; y < image2[1]; y++)
             {
-               putpix(vec2(x, y), rgba2rgb(*(image2+2 + y * image2[0] + x)));
+               putpix(vec2(x, y), *(image2 + y * image2[0] + x+8));
             }
         }
         /*for (int x = 0; x < image[0]; x++)

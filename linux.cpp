@@ -3,7 +3,7 @@
 #include "include/linux.hpp"
 #include <unistd.h>
 #include "include/keyboard.hpp"
-
+#include <assert.h>
 #include <png.h>
 
 extern const unsigned int screenwidth,screenheight;
@@ -52,8 +52,8 @@ void* platspec_getframebuffer(){
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window* win=SDL_CreateWindow("BalashEngine",SDL_WINDOWPOS_UNDEFINED|SDL_WINDOW_OPENGL,SDL_WINDOWPOS_UNDEFINED,screenwidth,screenheight,0);
     renderer=SDL_CreateRenderer(win,-1,SDL_RENDERER_ACCELERATED);
-    fbtex=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STREAMING,screenwidth,screenheight);
-    pix=(unsigned int*)malloc(sizeof(unsigned int [screenwidth*screenheight]));
+    fbtex=SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA8888,SDL_TEXTUREACCESS_STREAMING,screenwidth,screenheight);
+    pix=(unsigned int*)malloc(sizeof(unsigned int [screenwidth*screenheight])+100);
     pthread_create(&thread,NULL,loop,NULL);
     return pix;
 }
@@ -139,18 +139,18 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
         heightin=height;
         widthin=width;
     }
-    size_t imgbytes = widthin * heightin;
+    size_t imgbytes = widthin * heightin +8;
     unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+2);
     memset(texture, 0, imgbytes);
 
-    *(texture)=widthin;
-    *(texture+1)=heightin;
+    texture[0]=widthin;
+    texture[1]=heightin;
     for (int y = 0; y < heightin; y++)
     {
         for (int x = 0; x < widthin; x++)
         {
             unsigned int * ptr = (unsigned int *)(&row_pointers[y%height][x%width * 4]);
-            *(2+texture+y*widthin+x)=__builtin_bswap32(*ptr);
+            *(8+texture+y*widthin+x)=__builtin_bswap32(*ptr);
         }
     }
     printf("DONE!\n");
