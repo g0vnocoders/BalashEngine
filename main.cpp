@@ -36,14 +36,19 @@ typedef scalar matrix3[3][3];
 //https://theailearner.com/2020/11/04/affine-transformation/
 vec2 mulm3andv2(matrix3 m, vec2 v)
 {
-    /*
-    [x] [a][b][c]   [ax+by+c]
-    [y] [d][e][f] = [dx+ey+f]
-    [1] [#][#][#] not used
+    /*   x  y  1
+    [x] [a][b][c]   [ax+by+c]   [ret.x/z]
+    [y] [d][e][f] = [dx+ey+f] = [ret.y/z] 
+    [1] [g][h][i]   [gx+hy+i]
     */
-   vec2 ret(0,0);
+    vec2 ret(0,0);
+    scalar z;
     ret.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2];
     ret.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2];
+    z   =   m[2][0] * v.x + m[2][1] * v.y + m[2][2];
+
+    ret.x=ret.x/z;
+    ret.y=ret.y/z;
     return ret;
 }
 //TODO:i like to move it move it. btw this shit also wants to be free(texture.raw). be democratic to malloc.
@@ -72,7 +77,8 @@ texturexywh matrixImg(texturewh image, matrix3 m)
     texture.width=outwidth;
     texture.height=outheight;
     texture.x=minx;
-    texture.y=miny;//-4
+    texture.y=miny;
+    memset(texture.raw,0x0,outwidth*outheight*4);
     for (unsigned int x = 0; x < image.width; x++)
     {
         for (unsigned int y = 0; y < image.height; y++)
@@ -81,8 +87,9 @@ texturexywh matrixImg(texturewh image, matrix3 m)
             pos=add(pos,vec2(-minx,-miny));
             unsigned int px=(unsigned int)asmmath_floor(pos.x+0.5);
             unsigned int py=(unsigned int)asmmath_floor(pos.y+0.5);
-
-            texture.raw[px+py*outwidth]=image.raw[x+y*image.width];
+            if( (x >= 0 && y >= 0) && (x < image.width && y < image.height) ){
+                texture.raw[px+py*outwidth]=image.raw[x+y*image.width];
+            }
         }
     }
     return texture;
@@ -101,9 +108,9 @@ int main(int argc, char **argv)
     vec2 b = vec2(50, 50);
     vec2 c = vec2(100, 0);
     matrix3 tr = {
-        {1.0, 1, 100.0},
-        {0.0, 1.0, 100.0},
-        {0.0, 0.0, 0.0},
+        {1, 0, 0.0},
+        {0, 1, 0.0},
+        {0.001, 0.001, 1},
     };
     texturexywh image2=matrixImg(image,tr);
     while (1)
