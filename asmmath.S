@@ -74,8 +74,10 @@ asmmath_min:
     comisd %xmm1,%xmm0
     jbe retc
     movq %xmm1, %xmm0
+    ret
 asmmath_max:
     comisd %xmm0,%xmm1
     jbe retc
     movq %xmm1, %xmm0
+    ret
     
