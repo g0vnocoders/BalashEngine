@@ -37,16 +37,16 @@ vec3 add(vec3 in1,vec3 in2);
 vec2 mul(vec2 in,scalar s);
 vec3 mul(vec3 in,scalar s);
 vec3 mul(vec3 in1,vec3 in2);
-typedef unsigned int * textureRAW;//avoid it
+#define textureRAW unsigned int *;//avoid it
 typedef struct texturewh{//use it everywhere, especially inside objects
     unsigned int width;
     unsigned int height;
-    textureRAW raw;
+    unsigned int * raw;
 } texturewh;
-typedef struct texturexywh{//use it FOR RENDERER ONLY. it uses offset especially for it
+typedef struct texturexywh : texturewh{//use it FOR RENDERER ONLY. it uses offset especially for it
+    public:
     unsigned int x;
     unsigned int y;
-    texturewh tex;
 } texturexywh;
 
 #endif

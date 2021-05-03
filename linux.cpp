@@ -3,6 +3,7 @@
 #include "include/linux.hpp"
 #include <unistd.h>
 #include "include/keyboard.hpp"
+#include "include/types.hpp"
 #include <assert.h>
 #include <png.h>
 #include <iostream>
@@ -61,7 +62,7 @@ void* platspec_getframebuffer(){
 #ifndef _UTIL_CPP //disable it for now so it'll compile
 
 //don't forget to free, it is malloced
-unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, unsigned int heightin)
+texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsigned int heightin)
 {
 
     unsigned int width,height;
@@ -137,20 +138,22 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     png_read_image(png_ptr, (png_bytep*)row_pointers);
     fclose(fp);
 
+    if(heightin==0 || widthin==0){
+        heightin=height;
+        widthin=width;
+    }
+    size_t imgbytes = widthin * heightin +8;
+    texturewh texture;
+    texture.raw = new unsigned int[imgbytes];
+    texture.width=widthin;
+    texture.height=heightin;
+    for (int y = 0; y < heightin; y++)
 
-
-    size_t imgbytes = widthin * heightin + 8;
-    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+8);
-    memset(texture, 0, imgbytes);
-
-    texture[0]=widthin;
-    texture[1]=heightin;
-    for (unsigned int y = 0; y < heightin; y++)
     {
         for (unsigned int x = 0; x < widthin; x++)
         {
-            unsigned int * ptr = (unsigned int *)(&row_pointers[y][x*4]);
-            texture[y*widthin+x+2]=__builtin_bswap32(*ptr);
+            unsigned int * ptr = (unsigned int *)(&row_pointers[y%height][x%width * 4]);
+            texture.raw[x+y*widthin]=__builtin_bswap32(*ptr);
         }
     }
 
