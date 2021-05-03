@@ -142,7 +142,7 @@ int main(int argc, char **argv)
         {
             for (unsigned int y = 0; y < image[1]; y++)
             {
-               putpix(vec2(x, y), image [y * image[0] + x]);
+               putpix(vec2(asmmath_floor(x), y), image [y * image[0] + x]);
             }
         }
         /*for (int x = 0; x < image[0]; x++)

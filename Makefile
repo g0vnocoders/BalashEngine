@@ -20,7 +20,7 @@ so:
 run:
 	./$(BUILDDIR)/$(ELFNAME)
 
-all:$(BUILDDIR)/$(ELFNAME) Makefile domestos
+all:$(BUILDDIR)/$(ELFNAME) Makefile 
 
 getexec:#later for bloatstudio
 	@echo $(BUILDDIR)/$(ELFNAME)

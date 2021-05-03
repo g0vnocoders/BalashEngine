@@ -5,7 +5,7 @@
 #include "include/keyboard.hpp"
 #include <assert.h>
 #include <png.h>
-
+#include <iostream>
 extern const unsigned int screenwidth,screenheight;
 pthread_t thread;
 unsigned int* pix;
@@ -69,7 +69,7 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     png_byte bit_depth;
     png_structp png_ptr;
     png_infop info_ptr;
-    png_bytep *row_pointers;
+    png_bytep*row_pointers;
 
     char header[8]; // 8 is the maximum size that can be checked
 
@@ -103,7 +103,10 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     height = png_get_image_height(png_ptr, info_ptr);
     color_type = png_get_color_type(png_ptr, info_ptr);
     bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-
+    if(heightin==0 || widthin==0){
+        heightin=height;
+        widthin=width;
+    }
     /* Read any color_type into 8bit depth, RGBA format. */
     /* See http://www.libpng.org/pub/png/libpng-manual.txt */
     if (bit_depth == 16)
@@ -125,23 +128,20 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
         png_set_gray_to_rgb(png_ptr);
     png_read_update_info(png_ptr, info_ptr);
 
-    row_pointers = (png_bytep *)malloc(sizeof(png_bytep) * height);
-    for (int y = 0; y < height; y++)
+    row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
+    for (unsigned int y = 0; y < heightin; y++)
     {
         auto shit = png_get_rowbytes(png_ptr, info_ptr);
-        row_pointers[y] = (png_byte *)malloc(png_get_rowbytes(png_ptr, info_ptr));
+        row_pointers[y] = (png_bytep )malloc(png_get_rowbytes(png_ptr, info_ptr));
     }
-    png_read_image(png_ptr, row_pointers);
+    png_read_image(png_ptr, (png_bytep*)row_pointers);
     fclose(fp);
 
 
-    if(heightin==0 || widthin==0){
-        heightin=height;
-        widthin=width;
-    }
+
     size_t imgbytes = widthin * heightin + 8;
-    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+2);
-    memset(texture, 0, imgbytes*4);
+    unsigned int *texture = (unsigned int *)malloc(sizeof(unsigned int) * imgbytes+8);
+    memset(texture, 0, imgbytes);
 
     texture[0]=widthin;
     texture[1]=heightin;
@@ -149,12 +149,16 @@ unsigned int *platspec_loadTexture(const char *filename, unsigned int widthin, u
     {
         for (unsigned int x = 0; x < widthin; x++)
         {
-            unsigned int * ptr = (unsigned int *)(&row_pointers[y%heightin][(x%widthin)*4]);
+            unsigned int * ptr = (unsigned int *)(&row_pointers[y][x*4]);
             texture[y*widthin+x+2]=__builtin_bswap32(*ptr);
         }
     }
 
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    for (unsigned int y = 0; y < heightin; y++)
+    {
+        free(row_pointers[y]);
+    }
     free(row_pointers);
     png_free(png_ptr,NULL);
     return texture;
