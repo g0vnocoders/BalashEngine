@@ -1,17 +1,26 @@
 BUILDDIR=build
-OPTIMIZE=-Ofast
-ELFNAME=BalashEngine
+OPTIMIZE=-O0#fast
+ELFNAME=BalashEngine#checkout to branch cpp
 
-CFLAGS= $(OPTIMIZE) -Wall -Wextra -lpthread -lSDL2 -g#remove -g when release
+CXX=g++
+LIBS=`pkg-config --libs --cflags libpng`
+
+CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g#remove -g when release
+CPPFLAGS= $(OPTIMIZE) -g#remove -g when release
 ASFLAGS=-g
 
-
-SOURCE:=$(wildcard *.c) 
+SOURCE:=$(wildcard *.cpp) 
 ASM:=$(wildcard *.S) 
-OBJS:=$(SOURCE:.c=.o) 
+OBJS:=$(SOURCE:.cpp=.o) 
 ASMOBJS:=$(ASM:.S=.o)
 
-all:$(BUILDDIR)/$(ELFNAME) Makefile domestos
+default:all run
+so:
+	c++ -shared -o $(BUILDDIR)/libbalash.so -fPIC $(CFLAGS) $(SOSOURCE) 
+run:
+	./$(BUILDDIR)/$(ELFNAME)
+
+all:$(BUILDDIR)/$(ELFNAME) Makefile 
 
 getexec:#later for bloatstudio
 	@echo $(BUILDDIR)/$(ELFNAME)
@@ -21,4 +30,5 @@ mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
 $(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
-	c++ $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
+	$(CXX) $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
+

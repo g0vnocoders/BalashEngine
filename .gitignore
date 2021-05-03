@@ -1,3 +1,4 @@
 #DON'T gitignore .vscode. it has build settings
 *.o
+*.log
 build
