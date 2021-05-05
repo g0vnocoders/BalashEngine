@@ -7,3 +7,4 @@ extern unsigned int *framebuffer;
 void clearfb();
  extern const unsigned int screenwidth,screenheight;
  void drawtri(face tri);
+ texturewh filterimg(texturewh image,vec2 newsz);

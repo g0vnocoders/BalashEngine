@@ -18,7 +18,8 @@ void platspec_sync(){
     syncvar=0;
     while(!syncvar);
 }
-//
+#define tmp  (unsigned (1 - tx) * (1 - ty)  
+
 void platspec_creategamethread(void*(*func)(void*)){
     pthread_create(&thread,NULL,func,NULL);
     

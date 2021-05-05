@@ -2,6 +2,7 @@
 #include "include/asmmath.hpp"
 #include "include/types.hpp"
 #include <stdexcept>
+#include <iostream>
 unsigned int rgba2rgb(unsigned int rgba){
       return rgba >> 8;
 }
@@ -123,6 +124,77 @@ void drawline(vec2 start, vec2 end, unsigned int color)
 double edgefunc(vec2 a, vec2 b, vec2 p)
 {
       return ((p.x - a.x) * (b.y - a.y) + (p.y - a.y) * (b.x - a.x));
+}
+class rgbacolor {
+      public:
+    unsigned char r,g,b,a;
+    friend rgbacolor operator*(const rgbacolor &l,const rgbacolor &r);
+    friend rgbacolor operator*(const rgbacolor &l,const scalar &r);
+    friend rgbacolor operator+(const rgbacolor &l,const rgbacolor &r);
+    
+    rgbacolor(unsigned int i);
+}__attribute__((packed));
+rgbacolor::rgbacolor(unsigned int i){
+      *(unsigned int*)this=i;
+}
+unsigned int rgbacolor2ui(rgbacolor p){
+      return *(unsigned int*)&p;
+}
+unsigned int bilinear(scalar tx,scalar ty,unsigned int var1,unsigned int var2,unsigned int var3,unsigned int var4){
+        unsigned int tmp1=var1,tmp2=var2,tmp3=var3,tmp4=var4;
+            rgbacolor a=rgbacolor(tmp1)*(1-tx)+rgbacolor(tmp2)*tx;
+            rgbacolor b=rgbacolor(tmp3)*(1-tx)+rgbacolor(tmp4)*tx;
+
+           return rgbacolor2ui(a*(1-ty)+b*ty
+           ) ;
+
+}
+rgbacolor operator+(const rgbacolor& l,const rgbacolor& r){
+      rgbacolor ret(0);
+    ret.r=l.r+r.r;
+    ret.g=l.g+r.g;
+    ret.b=l.b+r.b;
+    ret.a=l.a+r.a;
+    return ret;
+}
+rgbacolor operator*(const rgbacolor& l,const rgbacolor& r){
+    rgbacolor ret(0);
+    ret.r=l.r*r.r;
+    ret.g=l.g*r.g;
+    ret.b=l.b*r.b;
+    ret.a=l.a*r.a;
+
+
+    return ret;
+}
+rgbacolor operator*(const rgbacolor& l,const scalar & r){
+    rgbacolor ret(0);
+    ret.r=l.r*r;
+    ret.g=l.g*r;
+    ret.b=l.b*r;
+    ret.a=l.a*r;
+
+
+    return ret;
+}
+
+texturewh filterimg(texturewh image,vec2 newsz){
+    texturewh ret;
+    ret.raw=(unsigned int*)malloc((unsigned long)newsz.x*newsz.y*4);
+    unsigned int* c=ret.raw;
+    ret.height=newsz.y;
+    ret.width=newsz.x;
+    for(long width=0;width<newsz.x;++width){
+        for(long height=0;height<newsz.y;++height){
+            vec2 newcoords((double)width/newsz.x*image.width,(double)height/newsz.y*image.height);
+            unsigned int var1=image.raw[(unsigned long)((image.width)*newcoords.y+newcoords.x)];
+            unsigned int var2=image.raw[(unsigned long)((image.width)*newcoords.y+(newcoords.x+1))];
+             unsigned int var3=image.raw[(unsigned long)((image.width)*(newcoords.y+1)+newcoords.x)];
+             unsigned int var4=image.raw[(unsigned long)((image.width)*(newcoords.y+1)+(newcoords.x+1))];
+            ret.raw[(unsigned long)(ret.width*height+width)]=bilinear(newcoords.x-(long)newcoords.x,newcoords.y-(long)newcoords.y,var1,var2,var3,var4);
+        }
+    }
+    return ret;
 }
 void drawtri(face tri)
 {

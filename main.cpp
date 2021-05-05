@@ -100,27 +100,28 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    texturewh image = platspec_loadTexture("tux.png",0,0);
+    texturewh image = platspec_loadTexture("test.png",0,0);
 
     platspec_creategamethread(maingamethread);
 
     vec2 a = vec2(0, 0);
     vec2 b = vec2(50, 50);
     vec2 c = vec2(100, 0);
-    matrix3 tr = {
+    matrix3 tr = { //explain perspective transform matrix please
         {1, 0, 0.0},
         {0, 1, 0.0},
         {0.001, 0.001, 1},
     };
     texturexywh image2=matrixImg(image,tr);
+    texturewh image3=filterimg(image,vec2(258*2,400));
     while (1)
     {
 
-        for (unsigned int x = 0; x < image2.width; x++)
+        for (unsigned int x = 0; x < image3.width; x++)
         {
-            for (unsigned int y = 0; y < image2.height; y++)
+            for (unsigned int y = 0; y < image3.height; y++)
             {
-               putpix(vec2(x+image2.x, y+image2.y),image2.raw[y * image2.width + x]);
+               putpix(vec2(x, y),image3.raw[y * image3.width + x]);
             }
         }
         
