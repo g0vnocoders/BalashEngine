@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    texturewh image = platspec_loadTexture("test.png",0,0);
+    texturewh image = platspec_loadTexture("pixels.png",0,0);
 
     platspec_creategamethread(maingamethread);
 
@@ -112,16 +112,15 @@ int main(int argc, char **argv)
         {0, 1, 0.0},
         {0.001, 0.001, 1},
     };
-    texturexywh image2=matrixImg(image,tr);
-    texturewh image3=filterimg(image,vec2(258*2,400));
+    texturexywh image2=matrixImg(filterimg(image,vec2(700,700)),tr);
     while (1)
     {
 
-        for (unsigned int x = 0; x < image3.width; x++)
+        for (unsigned int x = 0; x < image2.width; x++)
         {
-            for (unsigned int y = 0; y < image3.height; y++)
+            for (unsigned int y = 0; y < image2.height; y++)
             {
-               putpix(vec2(x, y),image3.raw[y * image3.width + x]);
+               putpix(vec2(x, y),image2.raw[y * image2.width + x]);
             }
         }
         
