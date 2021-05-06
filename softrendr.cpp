@@ -194,7 +194,12 @@ texturewh filterimg(texturewh image,vec2 newsz){
             ret.raw[(unsigned long)(ret.width*height+width)]=bilinear((newcoords.x-(unsigned long)newcoords.x),(newcoords.y-(unsigned long)newcoords.y),var1,var2,var3,var4);
         }
     }
-    return ret;
+    image.height=ret.height;
+    image.width=ret.width;
+    unsigned int* tmp=ret.raw;
+    free(image.raw);
+    image.raw=ret.raw;
+    return image;
 }
 void drawtri(face tri)
 {
