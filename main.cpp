@@ -91,7 +91,7 @@ bool isPointInPolygon( vec2 p, vec2 polygon[],int count )
 //also maybe implement stretching image ok thx. stretching image = matrix
 texturewh UVMap(texturewh image,vec2 map[], int size){
     for(unsigned int n=0;n<size;n++){
-        map[n]=vec2(map[n].x*image.width,map[n].x*image.height);//denormalize map
+        map[n]=vec2(map[n].x*image.width,map[n].y*image.height);//denormalize map
     }
 
     for (unsigned int x = 0; x < image.width; x++)

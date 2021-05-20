@@ -18,8 +18,8 @@ void drawline(vec2 start, vec2 end, unsigned int color)
 {
       double y1 = end.y;
       double y0 = start.y;
-      double x0 = start.x;
-      double x1 = end.x;
+      double x0 = start.x;//deal with textured tri drawing func. ill deal with oop shit such as entities 
+      double x1 = end.x;//triangle = rectangle + alpha lol. will do uv map ok
       // Now you could leave these lines out, it just means that your lines will be
 
       // upside down, as the 0 for y, is the top left, so we need to invert our line
