@@ -196,7 +196,6 @@ texturewh filterimg(texturewh image,vec2 newsz){
     }
     image.height=ret.height;
     image.width=ret.width;
-    unsigned int* tmp=ret.raw;
     free(image.raw);
     image.raw=ret.raw;
     return image;

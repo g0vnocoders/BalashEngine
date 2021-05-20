@@ -51,6 +51,62 @@ vec2 mulm3andv2(matrix3 m, vec2 v)
     ret.y=ret.y/z;
     return ret;
 }
+
+bool isPointInPolygon( vec2 p, vec2 polygon[],int count )
+{
+    double minX = polygon[ 0 ].x;
+    double maxX = polygon[ 0 ].x;
+    double minY = polygon[ 0 ].y;
+    double maxY = polygon[ 0 ].y;
+    for ( int i = 1 ; i < count ; i++ )
+    {
+        vec2 q = polygon[ i ];
+        minX = asmmath_min( q.x, minX );
+        maxX = asmmath_max( q.x, maxX );
+        minY = asmmath_min( q.y, minY );
+        maxY = asmmath_max( q.y, maxY );
+    }
+
+    if ( p.x < minX || p.x > maxX || p.x < minY || p.x > maxY )
+    {
+        return false;
+    }
+
+    // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+    //ok thx
+    bool inside = false;
+    for ( int i = 0, j = count - 1 ; i < count ; j = i++ )//lol
+    {
+        if ( ( polygon[ i ].y > p.y ) != ( polygon[ j ].y > p.y ) &&
+             p.x < ( polygon[ j ].x - polygon[ i ].x ) * ( p.y - polygon[ i ].y ) / ( polygon[ j ].y - polygon[ i ].y ) + polygon[ i ].x )
+        {
+            inside = !inside;
+        }
+    }
+
+    return inside;
+}
+
+//focus on render lol. at least do easy render lol
+//also maybe implement stretching image ok thx. stretching image = matrix
+texturewh UVMap(texturewh image,vec2 map[], int size){
+    for(unsigned int n=0;n<size;n++){
+        map[n]=vec2(map[n].x*image.width,map[n].x*image.height);//denormalize map
+    }
+
+    for (unsigned int x = 0; x < image.width; x++)
+    {
+        for (unsigned int y = 0; y < image.height; y++)
+        {
+            if(!isPointInPolygon(vec2(x,y),map,size)){
+                image.raw[x+y*image.width]=0x0;
+            };
+        }
+    }
+    //TODO:trunc image if possible. to save bytes
+    return image;
+}
+
 //TODO:i like to move it move it. btw this shit also wants to be free(texture.raw). be democratic to malloc.
 texturexywh matrixImg(texturewh image, matrix3 m)
 {
@@ -96,23 +152,26 @@ texturexywh matrixImg(texturewh image, matrix3 m)
 }
 //
 int main(int argc, char **argv)
-{ //commit it push it
+{
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    texturewh image = platspec_loadTexture("pixels.png",0,0);
-
+    texturewh image = platspec_loadTexture("tux.png",0,0);
+    vec2 uvs[] = {vec2(0.5,0.5),vec2(0,1),vec2(1,1)};
+    image=UVMap(image,uvs,3);
+    /*object creating algo:
+    cube - array of 6 faces
+    set geometry
+    set material (apply uv and textures)\
+    */
     platspec_creategamethread(maingamethread);
 
-    vec2 a = vec2(0, 0);
-    vec2 b = vec2(50, 50);
-    vec2 c = vec2(100, 0);
     matrix3 tr = { //explain perspective transform matrix please
         {1, 0, 0.0},
         {0, 1, 0.0},
-        {0.001, 0.001, 1},
-    };
-    texturexywh image2=matrixImg(filterimg(image,vec2(700,700)),tr);
+        {0.000/*1*/, 0, 1},
+    };//git push?
+    texturexywh image2=matrixImg(filterimg(image,vec2(300,400)),tr);
     while (1)
     {
 
