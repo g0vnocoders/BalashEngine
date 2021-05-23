@@ -1,8 +1,8 @@
 BUILDDIR=build
-OPTIMIZE=-O0#fast
+OPTIMIZE=-O0
 ELFNAME=BalashEngine#checkout to branch cpp
 
-CXX=g++
+CXX=c++
 LIBS=`pkg-config --libs --cflags libpng`
 
 CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g#remove -g when release
@@ -29,6 +29,6 @@ domestos:#really. added domestos XD
 mrproper:
 	rm -rf $(BUILDDIR)
 	mkdir $(BUILDDIR)
-$(BUILDDIR)/$(ELFNAME): $(OBJS) $(ASMOBJS)
+$(BUILDDIR)/$(ELFNAME): softrendr.o $(OBJS) $(ASMOBJS)
 	$(CXX) $(OBJS) $(ASMOBJS) -o $(BUILDDIR)/$(ELFNAME) $(CFLAGS)
 

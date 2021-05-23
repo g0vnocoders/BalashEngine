@@ -9,4 +9,6 @@ double asmmath_sqrt(double val);
 double asmmath_abs(double val);
 double asmmath_min(double a, double b);
 double asmmath_max(double a, double b);
+double asmmath_tan(double a, double b);
+
 }

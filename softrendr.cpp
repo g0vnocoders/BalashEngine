@@ -6,14 +6,7 @@
 unsigned int rgba2rgb(unsigned int rgba){
       return rgba >> 8;
 }
-inline void putpix(vec2 pos, unsigned int color)
-{
-      unsigned int loc = pos.x + pos.y * screenwidth;
-      if (pos.x < screenwidth && pos.y < screenheight && pos.x >= 0 && pos.y >= 0)
-      {
-            framebuffer[loc] = color; //*(unsigned int*)shit;//>>8;
-      }
-}
+
 void drawline(vec2 start, vec2 end, unsigned int color)
 {
       double y1 = end.y;
@@ -199,7 +192,7 @@ texturewh filterimg(texturewh image,vec2 newsz){
     free(image.raw);
     image.raw=ret.raw;
     return image;
-}
+}/*
 void drawtri(face tri)
 {
       extern vec3 camera_pos, camera_orientation;
@@ -226,7 +219,7 @@ void drawtri(face tri)
                   }
             }
       }
-}
+}*/
 void clearfb()
 {
       //portabillity!!1!!!!!!!!eleven

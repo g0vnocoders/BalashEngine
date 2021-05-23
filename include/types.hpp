@@ -8,6 +8,7 @@ class vec2 {
     scalar x;
     scalar y;
     vec2(scalar x,scalar y);
+    vec2();
     scalar len();
 
 } ;
@@ -16,6 +17,7 @@ class vec3
 public:
     scalar x, y, z;
     vec3(scalar x, scalar y, scalar z);
+    vec3();
     scalar len();
 };
 //am i lagging? do u see it?

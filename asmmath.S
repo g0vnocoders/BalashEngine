@@ -44,6 +44,15 @@ asmmath_vec3sin:
     movq %rdi,%rax
     ret
 
+asmmath_tan:
+    movq %xmm0,tmp(%rip)
+    fldl tmp(%rip)
+    fptan
+    fstpl tmp(%rip)
+    fstpl tmp(%rip) //need to do this 2 times since fptan pushes 1 too
+    movq tmp(%rip),%xmm0
+    ret
+
 asmmath_cos:
     movq %xmm0,tmp(%rip)
     fldl tmp(%rip)

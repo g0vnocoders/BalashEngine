@@ -16,10 +16,23 @@ vec3::vec3(scalar x, scalar y, scalar z)
     this->z = z;
     return;
 }
+vec3::vec3()
+{ //this
+    this->x = 0;
+    this->y = 0; //"this" keyword in c++ is actually parent pointer
+    this->z = 0;
+    return;
+}
 vec2::vec2(scalar x, scalar y)
 {
     this->x = x;
     this->y = y;
+    return;
+}
+vec2::vec2()
+{
+    this->x = 0;
+    this->y = 0;
     return;
 }
 scalar vec2::len()
