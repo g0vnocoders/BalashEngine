@@ -120,6 +120,8 @@ int main(int argc, char **argv)
     while (1)
     {//nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
        // count+=0.1 deg;
+               memset(framebuffer,0,screenwidth*screenheight*4);
+//have u pushed?
         unsigned int * shit = matrixticktest(xmove,zmove,rot);
         
         for (int x = 0; x < 512; x++)
@@ -140,24 +142,29 @@ int main(int argc, char **argv)
             }
         }
         //*/
-        if(keybuff_read()==SDLK_w){
-            zmove+=1;
+        //dangiit that's not how it works, use a switch statment
+        switch(keybuff_read()){
+            case SDLK_w:
+                zmove+=1;
+                break;
+             case SDLK_a:
+                zmove-=1;
+                break;            
+            case SDLK_s:
+                zmove-=1;
+                break;            
+            case SDLK_d:
+                zmove+=1;
+                break;     
+            case SDLK_LEFT:
+                rot-=1 deg;
+                break;
+            case SDLK_RIGHT:
+                rot+=1 deg;
+                break;         
         }
-        if(keybuff_read()==SDLK_a){
-            zmove-=1;
-        }
-        if(keybuff_read()==SDLK_s){
-            zmove-=1;
-        }
-         if(keybuff_read()==SDLK_d){
-            zmove+=1;
-        }
-         if(keybuff_read()==SDLK_LEFT){
-            rot-=1 deg;
-        }
-         if(keybuff_read()==SDLK_RIGHT){
-            rot+=1 deg;
-        }
+
+
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
     }
     __builtin_unreachable();
