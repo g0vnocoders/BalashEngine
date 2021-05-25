@@ -40,7 +40,7 @@ vec3 mulm4x4andv3(matrix4x4 M, vec3 in) //SHITTT understood! pointer magic!!!!!!
     out.x   = in.x * M[0][0] + in.y * M[1][0] + in.z * M[2][0] + /* in.z = 1 */ M[3][0]; 
     out.y   = in.x * M[0][1] + in.y * M[1][1] + in.z * M[2][1] + /* in.z = 1 */ M[3][1]; 
     out.z   = in.x * M[0][2] + in.y * M[1][2] + in.z * M[2][2] + /* in.z = 1 */ M[3][2]; 
-    scalar w = in.x * M[0][3] + in.y * M[1][3] + in.z * M[2][3] + /* in.z = 1 */ M[3][3]; //w is sometimes zero, fix this shit
+    scalar w =in.x * M[0][3] + in.y * M[1][3] + in.z * M[2][3] + /* in.z = 1 */ M[3][3]; //w is sometimes zero, fix this shit
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
     if (w != 1 ) { //this part causes divide by zero
         std::cout << w << std::endl;
@@ -49,13 +49,32 @@ vec3 mulm4x4andv3(matrix4x4 M, vec3 in) //SHITTT understood! pointer magic!!!!!!
         out.z /= w; 
     } 
     return out;
-} 
+}
+void mulm4x4(matrix4x4 * a, matrix4x4 * b, matrix4x4 * result){
+    for(int x=0;x<4;x++){
+        for(int y=0;y<4;y++){
+             (*result)[y][x]=
+             (*a)[y][0]*(*b)[0][x]+
+             (*a)[y][1]*(*b)[1][x]+
+             (*a)[y][2]*(*b)[2][x]+
+             (*a)[y][3]*(*b)[3][x];
+        }//just accept that how it is. it works 99.9%
+    }
+   
+}
+void Identitym4x4(matrix4x4 * in){
+    *(in)[0][0]=1; *(in)[0][1]=0; *(in)[0][2]=0; *(in)[0][3]=0;
+    *(in)[1][0]=0; *(in)[1][1]=1; *(in)[1][2]=0; *(in)[1][3]=0;
+    *(in)[2][0]=0; *(in)[2][1]=0; *(in)[2][2]=1; *(in)[2][3]=0;
+    *(in)[3][0]=0; *(in)[3][1]=0; *(in)[3][2]=0; *(in)[3][3]=1;
 
+}
 //camera shit goes here
 //FOV IS IN RADIANS!
 void setProjectionMatrix(const float &FOV, const float &near, const float &far,matrix4x4 *M) 
 { 
     // set the basic projection matrix screw pointerz
+    //Identitym4x4(M);//clears all shit before
     float scale = 1 / tan(FOV); //
     (*M)[0][0] = scale; // scale the x coordinates of the projected point ok ver 
     (*M)[0][1]=0;
@@ -74,6 +93,53 @@ void setProjectionMatrix(const float &FOV, const float &near, const float &far,m
     (*M)[3][2] = -far * near / (far - near); // used to remap z [0,1] nmv ok too
     (*M)[3][3] = (scalar)1;  //will this work?
 
+}
+void rotate4x4Z(matrix4x4 *M, vec3 angle) 
+{ 
+    // set the basic projection matrix screw pointerz
+    /*
+    [cos,-sin, 0, 0] rotateZ
+    [sin, cos, 0, 0]
+    [ 0 ,  0 , 1, 0]
+    [ 0 ,  0 , 0, 1]
+
+    [ cos, 0 ,sin, 0] rotateY
+    [ 0 ,  1 , 0 , 0]
+    [-sin, 0 ,cos, 0]
+    [ 0 , 0 , 0 , 1 ]
+
+    [ 1 , 0 , 0 , 0] rotateX
+    [ 0,cos,-sin, 0]
+    [ 0,sin, cos, 0]
+    [ 0 , 0 , 0 , 1]
+    */
+    if(angle.z!=0){
+        (*M)[0][0] += asmmath_cos(angle.z);//it is roll
+        (*M)[0][1] +=-asmmath_sin(angle.z);
+        (*M)[1][0] +=-(*M)[0][1];//optimize. it is sin
+        (*M)[1][1] += (*M)[0][0];//optimize. it is cos
+    }
+    if(angle.y!=0){
+        (*M)[0][0] += asmmath_cos(angle.y);//it is roll
+        (*M)[0][2] +=-asmmath_sin(angle.y);
+        (*M)[2][1] +=-(*M)[1][2];//optimize. it is sin
+        (*M)[2][2] += (*M)[1][1];//optimize. it is cos
+    }
+    if(angle.x!=0){
+        //matrix4x4 temp;
+        //Identitym4x4(&temp);
+        //matrix4x4 temp2 = {0};
+        (*M)[0][0] += asmmath_cos(angle.x);//it is roll
+        (*M)[0][2] += asmmath_sin(angle.x);
+        (*M)[2][0] +=-(*M)[0][0] ;//optimize. it is sin
+        (*M)[2][2] += (*M)[0][2];//optimize. it is cos
+        //mulm4x4(M,&temp,&temp2);
+        //for(int x=0;x<4;x++){
+        //    for(int y=0;y<4;y++){
+        //        (*M)[x][y]=temp2[x][y];
+        //    }
+        //}
+    }
 }
 
 
@@ -143,24 +209,22 @@ vec3* makeCube(vec3 pos,scalar s){
 //i think return statement returns the same variable everytime, might overwrite shit
 
 //lol
-unsigned int * matrixticktest(scalar xx,scalar zz,scalar rot){
+void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
 
-    uint32_t imageWidth = 512, imageHeight = 512; 
     matrix4x4 *Mproj=(matrix4x4*)new char[sizeof(matrix4x4)]; //need to configure this shit
     matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
-    worldToCamera[0][0] = rot;//rotation x
-    worldToCamera[1][1] =1;//rotation y
-    worldToCamera[2][2] =1;//rotation z
+    worldToCamera[0][0] =1;
+    worldToCamera[1][1] =1;
+    worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
     worldToCamera[3][0] = xx; //position        x
-    worldToCamera[3][1] = 0; //position        y
+    worldToCamera[3][1] = yy; //position        y
     worldToCamera[3][2] = zz; //camera position   z
-    setProjectionMatrix(100 deg, 0.1, 100,Mproj); //WTF
-    unsigned int *buffer = new unsigned int[imageWidth * imageHeight]; 
-    memset(buffer, 0x0, imageWidth * imageHeight*4);  //MULTIPLY BY FOUR!!!!!!!!!! 
-    unsigned int *backup=buffer;
+    setProjectionMatrix(150 deg, 0.01, 100,Mproj); //WTF
+    rotate4x4Z(Mproj,vec3(rot,0,0));
     int numVertices = 8;//isnt 60 too big?//dk
-    vec3* vertices = makeCube(vec3(0,0,10),20);//i see weird lines  try to rotate camera
+    vec3* vertices = makeCube(vec3(0,0,-80),40);//i see weird lines  try to rotate camera
+    vec2 * arrayv2 = new vec2[8];
     for (uint32_t i = 0; i < numVertices; ++i) { //shit. we need to make it work
         vec3 vertCamera=mulm4x4andv3(worldToCamera,vertices[i]); //swap vars. stop will watch smth
         vec3 projectedVert=mulm4x4andv3(*Mproj,vertCamera); 
@@ -168,13 +232,30 @@ unsigned int * matrixticktest(scalar xx,scalar zz,scalar rot){
             continue; 
         }
         // convert to raster space and mark the position of the vertex in the image with a simple dot
-        uint32_t x = std::min(imageWidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * imageWidth)); 
-        uint32_t y = std::min(imageHeight - 1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * imageHeight)); 
-        std::cout << y << std::endl;
-        buffer[y * imageWidth + x] = 0xffffffff; //i think it's cuz of misconfigured matrices, fix them thx
+        uint32_t x = std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth)); 
+        uint32_t y = std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight)); 
+        arrayv2[i]=vec2(x,y);
+
     } 
+    
+    drawline(arrayv2[0],arrayv2[1],0xffffffff);//square #1
+    drawline(arrayv2[1],arrayv2[2],0xffffffff);
+    drawline(arrayv2[2],arrayv2[3],0xffffffff);
+    drawline(arrayv2[3],arrayv2[0],0xffffffff);
+
+
+    drawline(arrayv2[4],arrayv2[5],0xffffffff);//square #2
+    drawline(arrayv2[5],arrayv2[6],0xffffffff);
+    drawline(arrayv2[6],arrayv2[7],0xffffffff);
+    drawline(arrayv2[7],arrayv2[4],0xffffffff);
+
+    drawline(arrayv2[0],arrayv2[4],0xffffffff);//link squares with sticks
+    drawline(arrayv2[1],arrayv2[5],0xffffffff);//voila - cube 
+    drawline(arrayv2[2],arrayv2[6],0xffffffff);
+    drawline(arrayv2[3],arrayv2[7],0xffffffff);
+
+
     delete(Mproj);
     //commit it and push
     free(vertices);//do u see white dots? no, pitch black
-    return backup;//why backup? same pointers
 }

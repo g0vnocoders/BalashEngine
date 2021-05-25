@@ -14,6 +14,7 @@
 #include <iostream>
 #include "include/matrix.hpp"
 scalar xmove =0; //a d
+scalar ymove =0; //shift space
 scalar zmove =0; //w s
 scalar rot = 0;//<- -> arrows
 unsigned int *framebuffer;
@@ -120,18 +121,10 @@ int main(int argc, char **argv)
     while (1)
     {//nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
        // count+=0.1 deg;
-               memset(framebuffer,0,screenwidth*screenheight*4);
-//have u pushed?
-        unsigned int * shit = matrixticktest(xmove,zmove,rot);
-        
-        for (int x = 0; x < 512; x++)
-        {
-            for (int y = 0; y < 512; y++)
-            {
-                putpix(vec2(x, y), shit[x+y * 512] );
-            }
-        }
-        delete shit;
+        memset(framebuffer,0,screenwidth*screenheight*4);
+
+        matrixticktest(xmove,ymove,zmove,rot);
+    
         /*
 
         for (int x = 0; x < image.width; x++)
@@ -148,14 +141,20 @@ int main(int argc, char **argv)
                 zmove+=1;
                 break;
              case SDLK_a:
-                zmove-=1;
+                xmove-=1;
                 break;            
             case SDLK_s:
                 zmove-=1;
                 break;            
             case SDLK_d:
-                zmove+=1;
+                xmove+=1;
                 break;     
+            case SDLK_LSHIFT:
+                ymove-=1;
+                break; 
+            case SDLK_SPACE:
+                ymove+=1;
+                break; 
             case SDLK_LEFT:
                 rot-=1 deg;
                 break;
