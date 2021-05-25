@@ -37,13 +37,12 @@ vec3 mulm4x4andv3(matrix4x4 M, vec3 in) //SHITTT understood! pointer magic!!!!!!
 { 
     //out = in * M;
     vec3 out=vec3(1,1,1);
-    out.x   = in.x * M[0][0] + in.y * M[1][0] + in.z * M[2][0] + /* in.z = 1 */ M[3][0]; 
-    out.y   = in.x * M[0][1] + in.y * M[1][1] + in.z * M[2][1] + /* in.z = 1 */ M[3][1]; 
-    out.z   = in.x * M[0][2] + in.y * M[1][2] + in.z * M[2][2] + /* in.z = 1 */ M[3][2]; 
-    scalar w =in.x * M[0][3] + in.y * M[1][3] + in.z * M[2][3] + /* in.z = 1 */ M[3][3]; //w is sometimes zero, fix this shit
+    out.x   = in.x * M[0][0] + in.y * M[1][0] + in.z * M[2][0] + M[3][0]; 
+    out.y   = in.x * M[0][1] + in.y * M[1][1] + in.z * M[2][1] + M[3][1]; 
+    out.z   = in.x * M[0][2] + in.y * M[1][2] + in.z * M[2][2] + M[3][2]; 
+    scalar w =in.x * M[0][3] + in.y * M[1][3] + in.z * M[2][3] + M[3][3]; 
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
-    if (w != 1 ) { //this part causes divide by zero
-        std::cout << w << std::endl;
+    if (w != 1 ) {
         out.x /= w; 
         out.y /= w; 
         out.z /= w; 
@@ -74,29 +73,19 @@ void Identitym4x4(matrix4x4 * in){
 void setProjectionMatrix(const float &FOV, const float &near, const float &far,matrix4x4 *M) 
 { 
     // set the basic projection matrix screw pointerz
-    //Identitym4x4(M);//clears all shit before
-    float scale = 1 / tan(FOV); //
-    (*M)[0][0] = scale; // scale the x coordinates of the projected point ok ver 
-    (*M)[0][1]=0;
-    (*M)[0][2]=0;
-    (*M)[0][3]=0;
-    (*M)[1][0]=0;
-    (*M)[1][1] = scale; // scale the y coordinates of the projected point why 0.100000001
-    (*M)[1][2]=0;
-    (*M)[1][3]=0;
-    (*M)[2][0]=0;
-    (*M)[2][1]=0;
-    (*M)[2][2] = -far / (far - near); // used to remap z to [0,1] 
-    (*M)[2][3] = -1; // set w = -z actuallly its in mulm4x4andv3
-    (*M)[3][0]=0;
-    (*M)[3][1]=0;
-    (*M)[3][2] = -far * near / (far - near); // used to remap z [0,1] nmv ok too
-    (*M)[3][3] = (scalar)1;  //will this work?
+
+    Identitym4x4(M);//clears all shit before
+    float scale = 1 / tan(FOV);
+    (*M)[0][0] = scale;
+    (*M)[1][1] = scale;
+    (*M)[2][2] = -far / (far - near);
+    (*M)[2][3] = -(far + near) / (far - near);
+    //this works. TESTED!
 
 }
 void rotate4x4Z(matrix4x4 *M, vec3 angle) 
 { 
-    // set the basic projection matrix screw pointerz
+    //in progress
     /*
     [cos,-sin, 0, 0] rotateZ
     [sin, cos, 0, 0]
@@ -129,10 +118,10 @@ void rotate4x4Z(matrix4x4 *M, vec3 angle)
         //matrix4x4 temp;
         //Identitym4x4(&temp);
         //matrix4x4 temp2 = {0};
-        (*M)[0][0] += asmmath_cos(angle.x);//it is roll
-        (*M)[0][2] += asmmath_sin(angle.x);
-        (*M)[2][0] +=-(*M)[0][0] ;//optimize. it is sin
-        (*M)[2][2] += (*M)[0][2];//optimize. it is cos
+        (*M)[0][0] = asmmath_cos(angle.x);//it is roll
+        (*M)[0][2] = asmmath_sin(angle.x);
+        (*M)[2][0] =-(*M)[0][0] ;//optimize. it is sin
+        (*M)[2][2] = (*M)[0][2];//optimize. it is cos
         //mulm4x4(M,&temp,&temp2);
         //for(int x=0;x<4;x++){
         //    for(int y=0;y<4;y++){
@@ -191,24 +180,22 @@ texturexywh matrix3x3Img(texturewh image, matrix3x3 m)
 
 vec3* makeCube(vec3 pos,scalar s){
     s/=2;
-    vec3 ret[8] = {
-        vec3(pos.x-s,pos.y+s,pos.z-s),
-        vec3(pos.x-s,pos.y+s,pos.z+s),       
-        vec3(pos.x+s,pos.y+s,pos.z+s),
-        vec3(pos.x+s,pos.y+s,pos.z-s),
-        
-        vec3(pos.x-s,pos.y-s,pos.z-s),
-        vec3(pos.x-s,pos.y-s,pos.z+s),       
-        vec3(pos.x+s,pos.y-s,pos.z+s),
-        vec3(pos.x+s,pos.y-s,pos.z-s)
-    };
-    vec3* returnval=(vec3*)malloc(sizeof(ret));
-    memcpy(returnval,ret,sizeof(ret));
-    return returnval;//inspect that
-}
-//i think return statement returns the same variable everytime, might overwrite shit
+    vec3* ret = new vec3[8];
+    
+    ret[0] = vec3(pos.x-s,pos.y+s,pos.z-s);
+    ret[1] = vec3(pos.x-s,pos.y+s,pos.z+s);       
+    ret[2] = vec3(pos.x+s,pos.y+s,pos.z+s);
+    ret[3] = vec3(pos.x+s,pos.y+s,pos.z-s);
 
-//lol
+    ret[4] = vec3(pos.x-s,pos.y-s,pos.z-s);
+    ret[5] = vec3(pos.x-s,pos.y-s,pos.z+s);       
+    ret[6] = vec3(pos.x+s,pos.y-s,pos.z+s);
+    ret[7] = vec3(pos.x+s,pos.y-s,pos.z-s);
+
+    return ret;//tested too, it is 100% ok
+}
+
+
 void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
 
     matrix4x4 *Mproj=(matrix4x4*)new char[sizeof(matrix4x4)]; //need to configure this shit
@@ -217,11 +204,12 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
     worldToCamera[1][1] =1;
     worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
+    rotate4x4Z(&worldToCamera,vec3(rot,0,0));
     worldToCamera[3][0] = xx; //position        x
     worldToCamera[3][1] = yy; //position        y
     worldToCamera[3][2] = zz; //camera position   z
     setProjectionMatrix(150 deg, 0.01, 100,Mproj); //WTF
-    rotate4x4Z(Mproj,vec3(rot,0,0));
+    //rotate4x4Z(Mproj,vec3(rot,0,0));
     int numVertices = 8;//isnt 60 too big?//dk
     vec3* vertices = makeCube(vec3(0,0,-80),40);//i see weird lines  try to rotate camera
     vec2 * arrayv2 = new vec2[8];
