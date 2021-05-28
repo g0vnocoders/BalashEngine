@@ -81,6 +81,7 @@ void setProjectionMatrix(const float &FOV, const float &near, const float &far,m
     (*M)[2][2] = -far / (far - near);
     (*M)[2][3] = -(far + near) / (far - near);
     //this works. TESTED!
+    matrix4x4 rot={0};
 
 }
 void rotate4x4Z(matrix4x4 *M, vec3 angle) 
@@ -102,33 +103,33 @@ void rotate4x4Z(matrix4x4 *M, vec3 angle)
     [ 0,sin, cos, 0]
     [ 0 , 0 , 0 , 1]
     */
-    if(angle.z!=0){
-        (*M)[0][0] += asmmath_cos(angle.z);//it is roll
-        (*M)[0][1] +=-asmmath_sin(angle.z);
-        (*M)[1][0] +=-(*M)[0][1];//optimize. it is sin
-        (*M)[1][1] += (*M)[0][0];//optimize. it is cos
-    }
-    if(angle.y!=0){
-        (*M)[0][0] += asmmath_cos(angle.y);//it is roll
-        (*M)[0][2] +=-asmmath_sin(angle.y);
-        (*M)[2][1] +=-(*M)[1][2];//optimize. it is sin
-        (*M)[2][2] += (*M)[1][1];//optimize. it is cos
-    }
-    if(angle.x!=0){
-        //matrix4x4 temp;
-        //Identitym4x4(&temp);
-        //matrix4x4 temp2 = {0};
-        (*M)[0][0] = asmmath_cos(angle.x);//it is roll
-        (*M)[0][2] = asmmath_sin(angle.x);
-        (*M)[2][0] =-(*M)[0][0] ;//optimize. it is sin
-        (*M)[2][2] = (*M)[0][2];//optimize. it is cos
-        //mulm4x4(M,&temp,&temp2);
-        //for(int x=0;x<4;x++){
-        //    for(int y=0;y<4;y++){
-        //        (*M)[x][y]=temp2[x][y];
-        //    }
-        //}
-    }
+   matrix4x4 temp;
+   matrix4x4 temp2;
+   matrix4x4 temp3;
+   matrix4x4 rotx=
+   {
+    {1,0,0,0},
+    {0,asmmath_cos(angle.x),-asmmath_sin(angle.x),0},
+    {0,asmmath_sin(angle.x),asmmath_cos(angle.x),0},
+    {0,0,0,1}};
+    matrix4x4 roty=
+   {
+    {asmmath_cos(angle.y),0,asmmath_sin(angle.y),0},
+    {0,1,0,0},
+    {-asmmath_sin(angle.y),0,asmmath_cos(angle.y),0},
+    {0,0,0,1}};   
+    matrix4x4 rotz=
+   {
+    {asmmath_cos(angle.z),-asmmath_sin(angle.z),0,0},
+    {asmmath_sin(angle.z),asmmath_cos(angle.z),0,0},
+    {0,0,1,0},
+    {0,0,0,1}};   
+    mulm4x4(M,&rotx,&temp);
+    mulm4x4(&temp,&roty,&temp2);
+    mulm4x4(&temp2,&rotz,&temp3);
+    memcpy(M[0][0], &temp3[0][0], 4*4*sizeof(temp[0][0]));
+
+    
 }
 
 
@@ -198,18 +199,18 @@ vec3* makeCube(vec3 pos,scalar s){
 
 void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
 
-    matrix4x4 *Mproj=(matrix4x4*)new char[sizeof(matrix4x4)]; //need to configure this shit
+    matrix4x4 *Mproj=(matrix4x4*)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
     worldToCamera[0][0] =1;
     worldToCamera[1][1] =1;
     worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
-    rotate4x4Z(&worldToCamera,vec3(rot,0,0));
+    rotate4x4Z(&worldToCamera,vec3(0,0,rot));
     worldToCamera[3][0] = xx; //position        x
     worldToCamera[3][1] = yy; //position        y
     worldToCamera[3][2] = zz; //camera position   z
     setProjectionMatrix(150 deg, 0.01, 100,Mproj); //WTF
-    //rotate4x4Z(Mproj,vec3(rot,0,0));
+   // rotate4x4Z(Mproj,vec3(rot,0,0));
     int numVertices = 8;//isnt 60 too big?//dk
     vec3* vertices = makeCube(vec3(0,0,-80),40);//i see weird lines  try to rotate camera
     vec2 * arrayv2 = new vec2[8];
