@@ -44,6 +44,10 @@ scalar vec3::len()
 { //pythagorean theorem
     return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
 }
+vec3 vec3::normalize()
+{ //actually neat
+    return mul(*this,this->len());
+}
 
 vec2 add(vec2 in1, vec2 in2)
 { //add 2 vectors

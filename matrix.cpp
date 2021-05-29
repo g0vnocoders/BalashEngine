@@ -42,7 +42,7 @@ vec3 mulm4x4andv3(matrix4x4 M, vec3 in) //SHITTT understood! pointer magic!!!!!!
     out.z   = in.x * M[0][2] + in.y * M[1][2] + in.z * M[2][2] + M[3][2]; 
     scalar w =in.x * M[0][3] + in.y * M[1][3] + in.z * M[2][3] + M[3][3]; 
     // normalize if w is different than 1 (convert from homogeneous to Cartesian coordinates)
-    if (w != 1 ) {
+    if (w != 1 && w != 0 ) {
         out.x /= w; 
         out.y /= w; 
         out.z /= w; 
@@ -183,6 +183,129 @@ void rotate4x4Z(matrix4x4 *M, vec3 angle)
 }
 
 
+void translate4x4(matrix4x4 *M, vec3 pos) 
+{ 
+    /*
+    [ 1 , 0 , 0 , X ]
+    [ 0 , 1 , 0 , Y ]
+    [ 0 , 0 , 1 , Z ]
+    [ 0 , 0 , 0 , 1 ]
+    */
+   matrix4x4 temp;
+   matrix4x4 trns=
+   {
+    {1,0,0,0},
+    {0,1,0,0},
+    {0,0,1,0},
+    {pos.x,pos.y,pos.z,1}
+   };
+   
+    mulm4x4(&trns,M,&temp);
+    memcpy(M, &temp, 4*4*sizeof(scalar));
+
+    
+}
+
+vec3 mulv3andv3(vec3 a, vec3 b){
+    matrix4x4 M = {
+        {  0 ,-a.z, a.y},
+        { a.z,  0 ,-a.x},
+        {-a.y, a.x, 0  }
+    };
+    return mulm4x4andv3(M,b);
+}
+
+//please, free it later!
+matrix4x4 * lookAt(vec3 from, vec3 to, vec3 tmp = vec3(0, 1, 0)) 
+{ 
+    /*
+    When the camera is vertical looking straight down or straight up, the forward axis gets very close to the arbitrary
+    axis used to compute the right axis. The extreme case is of course when the froward axis and this arbitrary axis are
+    perfectly parallel e.g. when the forward vector is either (0,1,0) or (0,-1,0). Unfortunately in this particular case,
+    the cross product fails producing a result for the right vector. 
+    */
+    vec3 forward = add(from,mul(to,-1)).normalize();//from + to*-1
+    vec3 right = mulv3andv3(tmp.normalize(), forward); 
+    vec3 up = mulv3andv3(forward, right); 
+ 
+    matrix4x4 * M = (matrix4x4*)new matrix4x4; 
+ 
+    (*M)[0][0] = right.x; 
+    (*M)[0][1] = right.y; 
+    (*M)[0][2] = right.z; 
+    (*M)[1][0] = up.x; 
+    (*M)[1][1] = up.y; 
+    (*M)[1][2] = up.z; 
+    (*M)[2][0] = forward.x; 
+    (*M)[2][1] = forward.y; 
+    (*M)[2][2] = forward.z; 
+ 
+    (*M)[3][0] = from.x; 
+    (*M)[3][1] = from.y; 
+    (*M)[3][2] = from.z; 
+ 
+    return M; 
+} 
+
+void moveForward(matrix4x4 * cam,vec3 Position){
+    
+    // move forward parallel to the xz-plane
+    // assumes camera.up is y-up
+
+    //WHAT TO DO HERE?
+    vec3 vec;
+    vec=vec3((*cam)[0][0],(*cam)[0][1],(*cam)[0][2]);
+    vec=mulv3andv3( vec3((*cam)[1][0],(*cam)[1][1],(*cam)[1][2]), vec ); //DEBUG: cross of 1,2,3 and 4,5,6 is -3 6 -3
+    vec=mul(vec,Position.z);
+    (*cam)[3][0]+=vec.x;(*cam)[3][1]+=vec.y;(*cam)[3][2]+=vec.z;
+    /*
+    scalar xDot = Position.x * (*cam)[0][0] +
+                  Position.y * (*cam)[1][0] +
+                  Position.z * (*cam)[2][0];
+
+    scalar yDot = Position.x * (*cam)[0][1] +
+                  Position.y * (*cam)[1][1] +
+                  Position.z * (*cam)[2][1];
+
+    scalar zDot = Position.x * (*cam)[0][2] +
+                  Position.y * (*cam)[1][2]+
+                  Position.z * (*cam)[2][2];
+
+    (*cam)[3][0] = -xDot;
+    (*cam)[3][1] = -yDot;
+    (*cam)[3][2] = -zDot;
+    */
+}
+/*
+
+
+
+var moveForward = function ( distance ) {
+
+		// move forward parallel to the xz-plane
+		// assumes camera.up is y-up
+		vec.setFromMatrixColumn( window.camera.matrix, 0 );
+        [x,y,z,0]
+        [0,1,0,0]
+        [0,0,1,0]
+        [0,0,0,1]
+		vec.crossVectors( window.camera.up, vec );
+
+        window.camera.position.addScaledVector( vec, distance );
+	};
+
+var moveRight = function ( distance ) {
+
+		vec.setFromMatrixColumn( window.camera.matrix, 0 );
+
+		window.camera.position.addScaledVector( vec, distance );
+
+	};
+
+
+
+*/
+
 
 //this shit also wants to be free(texture.raw). be democratic to malloc.
 
@@ -249,37 +372,34 @@ vec3* makeCube(vec3 pos,scalar s){
 vec3 pos;
 void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     vec3 momentum(xx,yy,zz);
-    rotatev3Z(&momentum,rot);
+    //rotatev3Z(&momentum,rot);
     pos.x+=momentum.x;
     pos.y+=momentum.y;
     pos.z+=momentum.z;
     std::cout << momentum.z << std::endl;
 
     matrix4x4 *Mproj=(matrix4x4*)new matrix4x4; //need to configure this shit
-    matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
-    worldToCamera[0][0] =1;
-    worldToCamera[1][1] =1;
-    worldToCamera[2][2] =1;
-    worldToCamera[3][3] =1;//must be 1 probably
-    worldToCamera[3][0] = pos.x; //position        x
-    worldToCamera[3][1] = pos.y; //position        y
-    worldToCamera[3][2] = pos.z; //camera position   z
-        rotate4x4Z(&worldToCamera,rot);
+    matrix4x4 worldToCamera; //hmmm. should it be 1 or 0?
+    Identitym4x4(&worldToCamera);
+    //translate4x4(&worldToCamera,pos);
 
+    rotate4x4Z(&worldToCamera,rot);
+
+    moveForward(&worldToCamera,pos);//??
+    
     setProjectionMatrix(130 deg, 0.01, 100,Mproj); //WTF
-   // rotate4x4Z(Mproj,vec3(rot,0,0));
-    int numVertices = 8;//isnt 60 too big?//dk
-    vec3* vertices = makeCube(vec3(0,0,10),40);//i see weird lines  try to rotate camera
+    int numVertices = 8;
+    vec3* vertices = makeCube(vec3(0,0,50),40);//i see weird lines  try to rotate camera
     vec2 arrayv2[8];
     for (uint32_t i = 0; i < numVertices; ++i) { //shit. we need to make it work
         vec3 vertCamera=mulm4x4andv3(worldToCamera,vertices[i]); //swap vars. stop will watch smth
         vec3 projectedVert=mulm4x4andv3(*Mproj,vertCamera); 
         if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1) {
-            continue; 
+            //continue;TODO: 
         }
         // convert to raster space and mark the position of the vertex in the image with a simple dot
-        uint32_t x = std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth)); 
-        uint32_t y = std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight)); 
+        scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;//std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth)); 
+        scalar y = (projectedVert.y + 1) * 0.5 * screenheight;//std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight)); 
         arrayv2[i]=vec2(x,y);
 
     } 

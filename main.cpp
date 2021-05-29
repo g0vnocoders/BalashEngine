@@ -164,7 +164,7 @@ int main(int argc, char **argv)
             if(keyarray[SDL_SCANCODE_A]){
                 xmove=-0.1 ;
             }
-                        if(keyarray[SDL_SCANCODE_E]){
+            if(keyarray[SDL_SCANCODE_E]){
                 ymove+=0.1 ;
             }
             if(keyarray[SDL_SCANCODE_Q]){

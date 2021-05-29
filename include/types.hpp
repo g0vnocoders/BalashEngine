@@ -19,6 +19,7 @@ public:
     vec3(scalar x, scalar y, scalar z);
     vec3();
     scalar len();
+    vec3 normalize();
 };
 //am i lagging? do u see it?
 typedef vec3 edge[2];//typedef is pretty brainfuck sometimes

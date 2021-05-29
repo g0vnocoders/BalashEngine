@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.html": "html",
         "sdl.hpp": "c",
         "asmmath.hpp": "c",
         "atomic": "cpp",
@@ -64,7 +65,11 @@
         "set": "cpp",
         "ratio": "cpp",
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "stop_token": "cpp",
+        "typeindex": "cpp"
     },
     "python.pythonPath": "/usr/bin/python",
     "makefile.launchConfigurations": [
