@@ -22,4 +22,4 @@ vec3 mulm4x4andv3(matrix4x4 M, vec3 in);
 matrix4x4* setProjectionMatrix(const float &FOV, const float &near, const float &far);
 //this shit also wants to be free(texture.raw). be democratic to malloc.
 texturexywh matrix3x3Img(texturewh image, matrix3x3 m);
-void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot);
+void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot);

@@ -47,6 +47,9 @@ void* loop(void* unused){
             }
             
         }
+        SDL_PumpEvents();
+        extern unsigned char* keyarray;
+        keyarray=(unsigned char*)SDL_GetKeyboardState(NULL);
     }
 }
 

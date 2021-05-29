@@ -197,7 +197,7 @@ vec3* makeCube(vec3 pos,scalar s){
 }
 
 
-void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
+void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
 
     matrix4x4 *Mproj=(matrix4x4*)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
@@ -205,7 +205,7 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
     worldToCamera[1][1] =1;
     worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
-    rotate4x4Z(&worldToCamera,vec3(0,0,rot));
+    rotate4x4Z(&worldToCamera,rot);
     worldToCamera[3][0] = xx; //position        x
     worldToCamera[3][1] = yy; //position        y
     worldToCamera[3][2] = zz; //camera position   z
@@ -213,7 +213,7 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
    // rotate4x4Z(Mproj,vec3(rot,0,0));
     int numVertices = 8;//isnt 60 too big?//dk
     vec3* vertices = makeCube(vec3(0,0,-80),40);//i see weird lines  try to rotate camera
-    vec2 * arrayv2 = new vec2[8];
+    vec2 arrayv2[8];
     for (uint32_t i = 0; i < numVertices; ++i) { //shit. we need to make it work
         vec3 vertCamera=mulm4x4andv3(worldToCamera,vertices[i]); //swap vars. stop will watch smth
         vec3 projectedVert=mulm4x4andv3(*Mproj,vertCamera); 
@@ -244,7 +244,8 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,scalar rot){
     drawline(arrayv2[3],arrayv2[7],0xffffffff);
 
 
-    delete(Mproj);
+    delete Mproj;
     //commit it and push
-    free(vertices);//do u see white dots? no, pitch black
+    delete vertices;//do u see white dots? no, pitch black
+
 }

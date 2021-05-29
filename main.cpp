@@ -16,7 +16,7 @@
 scalar xmove =0; //a d
 scalar ymove =0; //shift space
 scalar zmove =0; //w s
-scalar rot = 0;//<- -> arrows
+vec3 rot = vec3(0,0,180 deg);//<- -> arrows
 unsigned int *framebuffer;
 const unsigned int screenwidth = 1024, screenheight = 768; //lollll
 void *maingamethread(void *unused)
@@ -95,7 +95,7 @@ texturewh UVMap(texturewh image,vec2 map[], int size){
     return image;
 }
 
-
+unsigned char* keyarray;
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
@@ -136,31 +136,37 @@ int main(int argc, char **argv)
         }
         //*/
         //dangiit that's not how it works, use a switch statment
-        switch(keybuff_read()){
-            case SDLK_w:
-                zmove+=1;
-                break;
-             case SDLK_a:
-                xmove-=1;
-                break;            
-            case SDLK_s:
-                zmove-=1;
-                break;            
-            case SDLK_d:
-                xmove+=1;
-                break;     
-            case SDLK_LSHIFT:
-                ymove-=1;
-                break; 
-            case SDLK_SPACE:
-                ymove+=1;
-                break; 
-            case SDLK_LEFT:
-                rot-=1 deg;
-                break;
-            case SDLK_RIGHT:
-                rot+=1 deg;
-                break;         
+        if(keyarray){
+            if(keyarray[SDL_SCANCODE_UP]){
+                rot.x-=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_DOWN]){
+                rot.x+=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_LEFT]){
+                rot.y+=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_RIGHT]){
+                rot.y-=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_W]){
+                zmove+=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_S]){
+                zmove-=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_A]){
+                xmove-=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_D]){
+                xmove+=0.1 ;
+            }
+                        if(keyarray[SDL_SCANCODE_E]){
+                ymove+=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_Q]){
+                ymove-=0.1 ;
+            }
         }
 
 
