@@ -121,10 +121,13 @@ int main(int argc, char **argv)
     while (1)
     {//nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
        // count+=0.1 deg;
+
         memset(framebuffer,0,screenwidth*screenheight*4);
 
         matrixticktest(xmove,ymove,zmove,rot);
-    
+           xmove=0;
+       ymove=0;
+       zmove=0;
         /*
 
         for (int x = 0; x < image.width; x++)
@@ -150,16 +153,16 @@ int main(int argc, char **argv)
                 rot.y-=0.1 deg;
             }
             if(keyarray[SDL_SCANCODE_W]){
-                zmove+=0.1 ;
+                zmove=0.1 ;
             }
             if(keyarray[SDL_SCANCODE_S]){
-                zmove-=0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_A]){
-                xmove-=0.1 ;
+                zmove=-0.1 ;
             }
             if(keyarray[SDL_SCANCODE_D]){
-                xmove+=0.1 ;
+                xmove=+0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_A]){
+                xmove=-0.1 ;
             }
                         if(keyarray[SDL_SCANCODE_E]){
                 ymove+=0.1 ;

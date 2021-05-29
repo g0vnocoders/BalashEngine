@@ -62,10 +62,12 @@ void mulm4x4(matrix4x4 * a, matrix4x4 * b, matrix4x4 * result){
    
 }
 void Identitym4x4(matrix4x4 * in){
-    *(in)[0][0]=1; *(in)[0][1]=0; *(in)[0][2]=0; *(in)[0][3]=0;
-    *(in)[1][0]=0; *(in)[1][1]=1; *(in)[1][2]=0; *(in)[1][3]=0;
-    *(in)[2][0]=0; *(in)[2][1]=0; *(in)[2][2]=1; *(in)[2][3]=0;
-    *(in)[3][0]=0; *(in)[3][1]=0; *(in)[3][2]=0; *(in)[3][3]=1;
+    matrix4x4 id={{1,0,0,0},
+    {0,1,0,0},
+    {0,0,1,0},
+    {0,0,0,1}};
+    memcpy(in[0][0], &id[0][0], 4*4*sizeof(id[0][0]));
+
 
 }
 //camera shit goes here
@@ -83,6 +85,54 @@ void setProjectionMatrix(const float &FOV, const float &near, const float &far,m
     //this works. TESTED!
     matrix4x4 rot={0};
 
+}
+void rotatev3Z(vec3 *v, vec3 angle) 
+{ 
+    //in progress
+    /*
+    [cos,-sin, 0, 0] rotateZ
+    [sin, cos, 0, 0]
+    [ 0 ,  0 , 1, 0]
+    [ 0 ,  0 , 0, 1]
+
+    [ cos, 0 ,sin, 0] rotateY
+    [ 0 ,  1 , 0 , 0]
+    [-sin, 0 ,cos, 0]
+    [ 0 , 0 , 0 , 1 ]
+
+    [ 1 , 0 , 0 , 0] rotateX
+    [ 0,cos,-sin, 0]
+    [ 0,sin, cos, 0]
+    [ 0 , 0 , 0 , 1]
+    */
+   matrix4x4 temp;
+   matrix4x4 temp2;
+   matrix4x4 temp3;
+   matrix4x4 rotx=
+   {
+    {1,0,0,0},
+    {0,asmmath_cos(angle.x),-asmmath_sin(angle.x),0},
+    {0,asmmath_sin(angle.x),asmmath_cos(angle.x),0},
+    {0,0,0,1}};
+    matrix4x4 roty=
+   {
+    {asmmath_cos(angle.y),0,asmmath_sin(angle.y),0},
+    {0,1,0,0},
+    {-asmmath_sin(angle.y),0,asmmath_cos(angle.y),0},
+    {0,0,0,1}};   
+    matrix4x4 rotz=
+   {
+    {asmmath_cos(angle.z),-asmmath_sin(angle.z),0,0},
+    {asmmath_sin(angle.z),asmmath_cos(angle.z),0,0},
+    {0,0,1,0},
+    {0,0,0,1}};   
+    matrix4x4 M;
+    Identitym4x4(&M);
+    mulm4x4(&M,&rotx,&temp);
+    mulm4x4(&temp,&roty,&temp2);
+    mulm4x4(&temp2,&rotz,&temp3);
+    vec3 a=mulm4x4andv3(temp3,*v);
+    memcpy(v,&a,sizeof(vec3));
 }
 void rotate4x4Z(matrix4x4 *M, vec3 angle) 
 { 
@@ -196,8 +246,14 @@ vec3* makeCube(vec3 pos,scalar s){
     return ret;//tested too, it is 100% ok
 }
 
-
+vec3 pos;
 void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
+    vec3 momentum(xx,yy,zz);
+    rotatev3Z(&momentum,rot);
+    pos.x+=momentum.x;
+    pos.y+=momentum.y;
+    pos.z+=momentum.z;
+    std::cout << momentum.z << std::endl;
 
     matrix4x4 *Mproj=(matrix4x4*)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
@@ -205,9 +261,9 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     worldToCamera[1][1] =1;
     worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
-    worldToCamera[3][0] = xx; //position        x
-    worldToCamera[3][1] = yy; //position        y
-    worldToCamera[3][2] = zz; //camera position   z
+    worldToCamera[3][0] = pos.x; //position        x
+    worldToCamera[3][1] = pos.y; //position        y
+    worldToCamera[3][2] = pos.z; //camera position   z
         rotate4x4Z(&worldToCamera,rot);
 
     setProjectionMatrix(130 deg, 0.01, 100,Mproj); //WTF
