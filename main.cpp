@@ -16,7 +16,7 @@
 scalar xmove =0; //a d
 scalar ymove =0; //shift space
 scalar zmove =0; //w s
-vec3 rot = vec3(0,0,180 deg);//<- -> arrows
+vec3 rot = vec3(0,0,0 deg);//<- -> arrows
 unsigned int *framebuffer;
 const unsigned int screenwidth = 1024, screenheight = 768; //lollll
 void *maingamethread(void *unused)

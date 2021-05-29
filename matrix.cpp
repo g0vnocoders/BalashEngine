@@ -205,14 +205,15 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     worldToCamera[1][1] =1;
     worldToCamera[2][2] =1;
     worldToCamera[3][3] =1;//must be 1 probably
-    rotate4x4Z(&worldToCamera,rot);
     worldToCamera[3][0] = xx; //position        x
     worldToCamera[3][1] = yy; //position        y
     worldToCamera[3][2] = zz; //camera position   z
-    setProjectionMatrix(150 deg, 0.01, 100,Mproj); //WTF
+        rotate4x4Z(&worldToCamera,rot);
+
+    setProjectionMatrix(130 deg, 0.01, 100,Mproj); //WTF
    // rotate4x4Z(Mproj,vec3(rot,0,0));
     int numVertices = 8;//isnt 60 too big?//dk
-    vec3* vertices = makeCube(vec3(0,0,-80),40);//i see weird lines  try to rotate camera
+    vec3* vertices = makeCube(vec3(0,0,10),40);//i see weird lines  try to rotate camera
     vec2 arrayv2[8];
     for (uint32_t i = 0; i < numVertices; ++i) { //shit. we need to make it work
         vec3 vertCamera=mulm4x4andv3(worldToCamera,vertices[i]); //swap vars. stop will watch smth
@@ -244,7 +245,7 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     drawline(arrayv2[3],arrayv2[7],0xffffffff);
 
 
-    delete Mproj;
+    delete [] Mproj;
     //commit it and push
     delete vertices;//do u see white dots? no, pitch black
 
