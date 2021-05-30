@@ -158,10 +158,10 @@ int main(int argc, char **argv)
             if(keyarray[SDL_SCANCODE_S]){
                 zmove=-0.1 ;
             }
-            if(keyarray[SDL_SCANCODE_D]){
+            if(keyarray[SDL_SCANCODE_A]){
                 xmove=+0.1 ;
             }
-            if(keyarray[SDL_SCANCODE_A]){
+            if(keyarray[SDL_SCANCODE_D]){
                 xmove=-0.1 ;
             }
             if(keyarray[SDL_SCANCODE_E]){

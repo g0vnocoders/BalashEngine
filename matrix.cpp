@@ -245,24 +245,24 @@ matrix4x4 * lookAt(vec3 from, vec3 to, vec3 tmp = vec3(0, 1, 0))
     (*M)[3][2] = from.z; 
  
     return M; 
-} 
+} ;
 
 void moveForward(matrix4x4 * cam,vec3 Position){
     
     // move forward parallel to the xz-plane
     // assumes camera.up is y-up
 
-    //WHAT TO DO HERE?
+    //WHAT TO DO HERE? hm
     vec3 vec;
-    vec=vec3((*cam)[0][0],(*cam)[0][1],(*cam)[0][2]);
-    vec=mulv3andv3( vec3((*cam)[1][0],(*cam)[1][1],(*cam)[1][2]), vec ); //DEBUG: cross of 1,2,3 and 4,5,6 is -3 6 -3
-    vec=mul(vec,Position.z);
+    vec.z=Position.z;
+    vec.x=Position.x;
+    vec.y=Position.y;
     (*cam)[3][0]+=vec.x;(*cam)[3][1]+=vec.y;(*cam)[3][2]+=vec.z;
     /*
     scalar xDot = Position.x * (*cam)[0][0] +
                   Position.y * (*cam)[1][0] +
                   Position.z * (*cam)[2][0];
-
+//hmm, actually i think the mojang function works, but only with the strafe? also apply momentum to other stuff
     scalar yDot = Position.x * (*cam)[0][1] +
                   Position.y * (*cam)[1][1] +
                   Position.z * (*cam)[2][1];
@@ -370,23 +370,33 @@ vec3* makeCube(vec3 pos,scalar s){
 }
 
 vec3 pos;
+
+ void calcrelativemomentum(vec3 *momentum,scalar speed,vec3 rot) {//why pointer? it is obje
+    (*momentum).z*=-1;
+      scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z;
+      if(dist >= 0.01) {
+         dist = speed / asmmath_sqrt((scalar)dist);
+         (*momentum).x *= dist;
+         (*momentum).z *= dist;
+         scalar sin = asmmath_sin((scalar)-rot.y );
+         scalar cos = asmmath_cos((scalar)-rot.y );
+         pos.x+=(*momentum).x * cos - (*momentum).z * sin;
+         pos.z+= (*momentum).z * cos + (*momentum).x * sin;
+      }
+   }
 void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     vec3 momentum(xx,yy,zz);
-    //rotatev3Z(&momentum,rot);
-    pos.x+=momentum.x;
-    pos.y+=momentum.y;
-    pos.z+=momentum.z;
-    std::cout << momentum.z << std::endl;
+    calcrelativemomentum(&momentum,0.4,rot);//fuck, doesn't work
+
 
     matrix4x4 *Mproj=(matrix4x4*)new matrix4x4; //need to configure this shit
-    matrix4x4 worldToCamera; //hmmm. should it be 1 or 0?
+    matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
-    //translate4x4(&worldToCamera,pos);
 
+    moveForward(&worldToCamera,pos);//?? use move fforward xor mojang calcrelativemomentum not both
     rotate4x4Z(&worldToCamera,rot);
+          std::cout << rot.y  << std::endl;
 
-    moveForward(&worldToCamera,pos);//??
-    
     setProjectionMatrix(130 deg, 0.01, 100,Mproj); //WTF
     int numVertices = 8;
     vec3* vertices = makeCube(vec3(0,0,50),40);//i see weird lines  try to rotate camera
