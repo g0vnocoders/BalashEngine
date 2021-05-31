@@ -48,7 +48,14 @@ vec3 vec3::normalize()
 { //actually neat
     return mul(*this,this->len());
 }
-
+vec2 vec2::floor()
+{ //actually neat
+    return vec2(asmmath_floor(this->x),asmmath_floor(this->y));
+}
+vec3 vec3::floor()
+{ //actually neat
+    return vec3(asmmath_floor(this->x),asmmath_floor(this->y),asmmath_floor(this->z));
+}
 vec2 add(vec2 in1, vec2 in2)
 { //add 2 vectors
     return vec2(in1.x + in2.x, in1.y + in2.y);
@@ -92,6 +99,13 @@ vec3 mul(vec3 in1, vec3 in2)
     scalar zres = in1.x * in2.y - in2.x * in1.y;
     return vec3(xres, yres, zres);
 }
+
+bool vec2::operator == (vec2 in){
+    if(in.x==this->x & in.y==this->y) return true;
+    else return false;
+}
+
+
 
 //btw. separate vectors from faces
 /////////////////////////////////////////////////////////////////////////////////

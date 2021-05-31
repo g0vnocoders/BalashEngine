@@ -171,4 +171,39 @@ texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsig
     return texture;
 }
 
+//don't forget to free, it is malloced
+vec3 * platspec_loadOBJ(const char * filename){
+    FILE * obj = fopen(filename,"r");
+    char * buffer;
+    size_t len = 0;
+    ssize_t read;
+    unsigned int n=1;
+    unsigned int v_count;
+    while ((read = getline(&buffer, &len, obj)) != -1)
+        if(buffer[0]=='v' && buffer[1]==' ')
+            v_count++;
+
+    rewind (obj);
+
+    vec3 * ret = new vec3[v_count];
+    ret[0]=vec3(v_count,0,0);//two zeros are reserved for other vals from obj
+    while ((read = getline(&buffer, &len, obj)) != -1) {
+        if(buffer[0]=='v' && buffer[1]==' '){
+            printf(buffer);
+            char* shit [3];
+            strsep(&buffer, " ");
+            shit[0]=strsep(&buffer, " ");
+            shit[1]=strsep(&buffer, " ");
+            shit[2]=strsep(&buffer, " ");
+            ret[n]=vec3(
+            strtod(shit[0],0x0),   
+            strtod(shit[1],0x0),
+            strtod(shit[2],0x0));
+            n++;
+        }
+        printf("%s", buffer);
+    }
+    fclose(obj);
+    return ret;
+}
 #endif

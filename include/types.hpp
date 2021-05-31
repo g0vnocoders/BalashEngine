@@ -10,7 +10,8 @@ class vec2 {
     vec2(scalar x,scalar y);
     vec2();
     scalar len();
-
+    vec2 floor();
+    bool operator == (vec2 in);
 } ;
 class vec3
 {
@@ -20,6 +21,7 @@ public:
     vec3();
     scalar len();
     vec3 normalize();
+    vec3 floor();
 };
 //am i lagging? do u see it?
 typedef vec3 edge[2];//typedef is pretty brainfuck sometimes

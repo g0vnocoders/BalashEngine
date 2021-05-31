@@ -102,6 +102,8 @@ int main(int argc, char **argv)
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
     texturewh image = platspec_loadTexture("tux.png",0,0);
+
+    vec3 * cube = platspec_loadOBJ("snowman.obj");
     vec2 uvs[] = {vec2(0,0.5),vec2(0,1),vec2(1,1)};
     image=UVMap(image,uvs,3);
     /*object creating algo:
@@ -124,7 +126,7 @@ int main(int argc, char **argv)
 
         memset(framebuffer,0,screenwidth*screenheight*4);
 
-        matrixticktest(xmove,ymove,zmove,rot);
+        matrixticktest(xmove,ymove,zmove,rot,cube);
            xmove=0;
        ymove=0;
        zmove=0;

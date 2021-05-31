@@ -373,18 +373,26 @@ vec3 pos;
 
  void calcrelativemomentum(vec3 *momentum,scalar speed,vec3 rot) {//why pointer? it is obje
     (*momentum).z*=-1;
-      scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z;
+      scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z + (*momentum).y * (*momentum).y ;
       if(dist >= 0.01) {
          dist = speed / asmmath_sqrt((scalar)dist);
          (*momentum).x *= dist;
          (*momentum).z *= dist;
+         (*momentum).y *= dist;
          scalar sin = asmmath_sin((scalar)-rot.y );
          scalar cos = asmmath_cos((scalar)-rot.y );
          pos.x+=(*momentum).x * cos - (*momentum).z * sin;
          pos.z+= (*momentum).z * cos + (*momentum).x * sin;
+
+         pos.y+= (*momentum).y * cos + (*momentum).y * sin;
       }
    }
-void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
+void drawlinefix(vec2 pos1,vec2 pos2, unsigned int color){
+    if(!(pos1==vec2(0,0) || pos2==vec2(0,0))){
+        drawline(pos1,pos2,color);
+    }
+}
+void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot, vec3 * vertices){
     vec3 momentum(xx,yy,zz);
     calcrelativemomentum(&momentum,0.4,rot);//fuck, doesn't work
 
@@ -393,46 +401,49 @@ void matrixticktest(scalar xx,scalar yy,scalar zz,vec3 rot){
     matrix4x4 worldToCamera={0}; //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
 
-    moveForward(&worldToCamera,pos);//?? use move fforward xor mojang calcrelativemomentum not both
+    //moveForward(&worldToCamera,pos);//?? use move fforward xor mojang calcrelativemomentum not both
     rotate4x4Z(&worldToCamera,rot);
-          std::cout << rot.y  << std::endl;
-
+    translate4x4(&worldToCamera,pos);
     setProjectionMatrix(130 deg, 0.01, 100,Mproj); //WTF
-    int numVertices = 8;
-    vec3* vertices = makeCube(vec3(0,0,50),40);//i see weird lines  try to rotate camera
-    vec2 arrayv2[8];
+    uint numVertices = vertices[0].x;
+    //vec3* vertices = makeCube(vec3(0,0,50),40);//i see weird lines  try to rotate camera
+    vec2 arrayv2[numVertices];
+    vertices+=1;
     for (uint32_t i = 0; i < numVertices; ++i) { //shit. we need to make it work
-        vec3 vertCamera=mulm4x4andv3(worldToCamera,vertices[i]); //swap vars. stop will watch smth
+        vec3 vertCamera=mulm4x4andv3(worldToCamera,add(mul(vec3(vertices[i].x,-vertices[i].y,-vertices[i].z),40),vec3(0,0,160))); //swap vars. stop will watch smth
         vec3 projectedVert=mulm4x4andv3(*Mproj,vertCamera); 
-        if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1) {
-            //continue;TODO: 
+        if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z<worldToCamera[3][3]) {
+            continue;//TODO: 
         }
         // convert to raster space and mark the position of the vertex in the image with a simple dot
         scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;//std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth)); 
         scalar y = (projectedVert.y + 1) * 0.5 * screenheight;//std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight)); 
         arrayv2[i]=vec2(x,y);
+        signed short shitt[2]={(signed short)vertCamera.z,(signed short)0xffff};
+        putpix(arrayv2[i].floor(),*(unsigned int *)(&shitt));
 
     } 
-    
-    drawline(arrayv2[0],arrayv2[1],0xffffffff);//square #1
-    drawline(arrayv2[1],arrayv2[2],0xffffffff);
-    drawline(arrayv2[2],arrayv2[3],0xffffffff);
-    drawline(arrayv2[3],arrayv2[0],0xffffffff);
+
+    /*
+    drawlinefix(arrayv2[0],arrayv2[1],0xffffffff);//square #1
+    drawlinefix(arrayv2[1],arrayv2[2],0xffffffff);
+    drawlinefix(arrayv2[2],arrayv2[3],0xffffffff);
+    drawlinefix(arrayv2[3],arrayv2[0],0xffffffff);
 
 
-    drawline(arrayv2[4],arrayv2[5],0xffffffff);//square #2
-    drawline(arrayv2[5],arrayv2[6],0xffffffff);
-    drawline(arrayv2[6],arrayv2[7],0xffffffff);
-    drawline(arrayv2[7],arrayv2[4],0xffffffff);
+    drawlinefix(arrayv2[4],arrayv2[5],0xffffffff);//square #2
+    drawlinefix(arrayv2[5],arrayv2[6],0xffffffff);
+    drawlinefix(arrayv2[6],arrayv2[7],0xffffffff);
+    drawlinefix(arrayv2[7],arrayv2[4],0xffffffff);
 
-    drawline(arrayv2[0],arrayv2[4],0xffffffff);//link squares with sticks
-    drawline(arrayv2[1],arrayv2[5],0xffffffff);//voila - cube 
-    drawline(arrayv2[2],arrayv2[6],0xffffffff);
-    drawline(arrayv2[3],arrayv2[7],0xffffffff);
-
+    drawlinefix(arrayv2[0],arrayv2[4],0xffffffff);//link squares with sticks
+    drawlinefix(arrayv2[1],arrayv2[5],0xffffffff);//voila - cube 
+    drawlinefix(arrayv2[2],arrayv2[6],0xffffffff);
+    drawlinefix(arrayv2[3],arrayv2[7],0xffffffff);
+*/
 
     delete [] Mproj;
     //commit it and push
-    delete vertices;//do u see white dots? no, pitch black
+    //delete vertices;//do u see white dots? no, pitch black
 
 }
