@@ -5,13 +5,19 @@ typedef double scalar;
 
 class vec2 {
     public:
-    scalar x;
-    scalar y;
+    scalar x, y;
     vec2(scalar x,scalar y);
     vec2();
     scalar len();
+    vec2 normalize();
     vec2 floor();
+    bool isColinear(vec2 in);
+
     bool operator == (vec2 in);
+    vec2 operator + (vec2 in);
+    vec2 operator - ();
+    vec2 operator * (scalar in);
+    scalar operator * (vec2 in);
 } ;
 class vec3
 {
@@ -22,7 +28,16 @@ public:
     scalar len();
     vec3 normalize();
     vec3 floor();
+    bool isColinear(vec3 in);
+
+    bool operator == (vec3 in);
+    vec3 operator + (vec3 in);
+    vec3 operator - ();
+    vec3 operator * (scalar in);
+    vec3 operator * (vec3 in);
 };
+
+
 //am i lagging? do u see it?
 typedef vec3 edge[2];//typedef is pretty brainfuck sometimes
 class face{
@@ -35,13 +50,6 @@ class face{
     face(edge* faceedge);
 };
 
-scalar v2len(vec2 in);
-scalar v3len(vec3 in);
-vec2 add(vec2 in1,vec2 in2);
-vec3 add(vec3 in1,vec3 in2);
-vec2 mul(vec2 in,scalar s);
-vec3 mul(vec3 in,scalar s);
-vec3 mul(vec3 in1,vec3 in2);
 #define textureRAW unsigned int *;//avoid it
 typedef struct texturewh{//use it everywhere, especially inside objects
     unsigned int width;

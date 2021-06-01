@@ -5,24 +5,71 @@
 #include <cstdio>
 #include <cstdlib>
 #include "include/asmmath.hpp"
+#include "include/matrix.hpp"
 #include <stdexcept>
-face::face(edge* faceedge):uv(0,0){
-    this->faceedge=faceedge;
+face::face(edge *faceedge) : uv(0, 0)
+{
+    this->faceedge = faceedge;
 }
+//"this" keyword in c++ is actually parent pointer
 vec3::vec3(scalar x, scalar y, scalar z)
-{ //this
-    this->x = x;
-    this->y = y; //"this" keyword in c++ is actually parent pointer
-    this->z = z;
+{
+    this->x = x;this->y = y; this->z = z;
     return;
 }
 vec3::vec3()
-{ //this
-    this->x = 0;
-    this->y = 0; //"this" keyword in c++ is actually parent pointer
-    this->z = 0;
+{
+    this->x = 0;this->y = 0;this->z = 0;
     return;
 }
+scalar vec3::len()
+{ //pythagorean theorem
+    return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
+}
+vec3 vec3::normalize()
+{ //actually neat
+    return *this * (1/this->len());
+}
+vec3 vec3::floor()
+{
+    return vec3(asmmath_floor(this->x), asmmath_floor(this->y), asmmath_floor(this->z));
+}
+
+bool vec3::operator==(vec3 in)
+{
+    if (in.x == this->x && in.y == this->y && in.z == this->z)
+        return true;
+    else
+        return false;
+}
+vec3 vec3::operator + (vec3 in)
+{
+    return vec3(this->x + in.x, this->y  + in.y, this->z  + in.z);
+}
+vec3 vec3::operator - ()
+{
+    return vec3(this->x * -1, this->y * -1, this->z * -1);
+}
+vec3 vec3::operator * (scalar s)
+{
+    return vec3(this->x * s, this->y  * s, this->z  * s);
+}
+vec3 vec3::operator * (vec3 in)
+{
+    matrix4x4 M = {
+        {    0   ,this->z, -this->y},
+        {-this->z,   0   , this->x },
+        {this->y ,-this->x,    0    }
+    };
+    return mulm4x4andv3(M,in);
+}
+
+
+
+//vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2
+//vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2 vec2
+
+
 vec2::vec2(scalar x, scalar y)
 {
     this->x = x;
@@ -40,70 +87,57 @@ scalar vec2::len()
     return asmmath_sqrt(this->x * this->x + this->y * this->y);
 }
 
-scalar vec3::len()
-{ //pythagorean theorem
-    return asmmath_sqrt(this->x * this->x + this->y * this->y + this->z * this->z);
-}
-vec3 vec3::normalize()
+vec2 vec2::normalize()
 { //actually neat
-    return mul(*this,this->len());
+    return *this * (1/this->len());
 }
+
 vec2 vec2::floor()
 { //actually neat
-    return vec2(asmmath_floor(this->x),asmmath_floor(this->y));
-}
-vec3 vec3::floor()
-{ //actually neat
-    return vec3(asmmath_floor(this->x),asmmath_floor(this->y),asmmath_floor(this->z));
-}
-vec2 add(vec2 in1, vec2 in2)
-{ //add 2 vectors
-    return vec2(in1.x + in2.x, in1.y + in2.y);
-}
-vec3 add(vec3 in1, vec3 in2)
-{ //add 2 vectors
-    return vec3(in1.x + in2.x, in1.y + in2.y, in1.z + in2.z);
+    return vec2(asmmath_floor(this->x), asmmath_floor(this->y));
 }
 
-bool isColinear(vec2 in1, vec2 in2){
-    return (in1.x/in2.x == in1.y/in2.y);
-}
-
-bool isColinear(vec3 in1, vec3 in2){
-    return (in1.x/in2.x == in1.y/in2.y) && (in1.y/in2.y == in1.z/in2.z);
-}
-
-
-vec2 mul(vec2 in, scalar s)
+bool vec2::operator==(vec2 in)
 {
-    return vec2(in.x * s, in.y * s);
-}
-vec3 mul(vec3 in, scalar s)
-{
-    return vec3(in.x * s, in.y * s, in.z * s);
-}
-vec3 mul(vec3 in1, vec3 in2)
-{
-    //how to set main branch?
-    //git checkout cpp
-    /*
-    | i  j  k |   xres  -yres   zres
-    | x  y  z | = |y z|  |x z|  |x y|  
-    | X  Y  Z |   |Y Z|  |X Z|  |X Y|
-    xres=yZ-Yz
-    yres=(xZ-Xz) *-1 Xz-xZ
-    zres=xY-Xy
-    */
-    scalar xres = in1.y * in2.z - in2.y * in1.z;
-    scalar yres = in2.z * in1.z - in1.x * in2.z; //y inverted
-    scalar zres = in1.x * in2.y - in2.x * in1.y;
-    return vec3(xres, yres, zres);
+    if (in.x == this->x & in.y == this->y)
+        return true;
+    else
+        return false;
 }
 
-bool vec2::operator == (vec2 in){
-    if(in.x==this->x & in.y==this->y) return true;
-    else return false;
+
+vec2 vec2::operator + (vec2 in)
+{
+    return vec2(this->x + in.x, this->x + in.y);
 }
+vec2 vec2::operator - ()
+{
+    return vec2(this->x * -1, this->y * -1);
+}
+vec2 vec2::operator * (scalar s)
+{
+    return vec2(this->x * s, this->y  * s);
+}
+scalar vec2::operator * (vec2 in)
+{
+    return this->x * in.x + this->y * in.y;
+}
+//NON CLASS FUNCS (C STYLE)
+
+
+
+
+
+bool vec2::isColinear(vec2 in)
+{
+    return (this->x / in.x == this->y / in.y);
+}
+
+bool vec3::isColinear(vec3 in)
+{
+    return (this->x / in.x == this->y / in.y) && (this->y / in.y == this->z / in.z);
+}
+
 
 
 
@@ -111,45 +145,45 @@ bool vec2::operator == (vec2 in){
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-//invoking (faceobj)[] calls this function 
-face face::operator[](unsigned int n){ //look closely as i perform c++ magic  yeah
+//invoking (faceobj)[] calls this function
+face face::operator[](unsigned int n)
+{ //look closely as i perform c++ magic  yeah
     unsigned int counter;
-    face* it;
+    face *it;
     std::exception e;
-    for(int i=0;counter<i;++i){
-        it=it->next;
-        if(!it){
+    for (int i = 0; counter < i; ++i)
+    {
+        it = it->next;
+        if (!it)
+        {
 
-            throw std::out_of_range("it->next is NULL!!!!!!");//throw exception if next is nonexistant, so we won't cause segfaults
+            throw std::out_of_range("it->next is NULL!!!!!!"); //throw exception if next is nonexistant, so we won't cause segfaults
         }
-    } //boom, dynamic linked list array 
+    } //boom, dynamic linked list array
     return *it;
 }
 
-
-
+/*
 //Dont forget to free Face! it is malloced!
-face* edge2face(int num,...){//do it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    va_list arguments;                     
-    va_start ( arguments, num );           
+face *edge2face(int num, ...)
+{ //do it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    va_list arguments;
+    va_start(arguments, num);
 
-    face* out=(face*)malloc(sizeof(face));//and it especially - linter complains
-    for ( int x = 1; x < num; x++ )        
+    face *out = (face *)malloc(sizeof(face)); //and it especially - linter complains
+    for (int x = 1; x < num; x++)
     {
-        out->faceedge=va_arg ( arguments, edge* ); 
-        out->next=(face*)malloc(sizeof(face));//thanks lol. now i am here for hour
-        out=out->next;
+        out->faceedge = va_arg(arguments, edge *);
+        out->next = (face *)malloc(sizeof(face)); //thanks lol. now i am here for hour
+        out = out->next;
     }
 
-    va_end ( arguments );                  // Cleans up the list
- 
-    return out;           
-}//hello?
-/*
-//or better use this
-//but this needs some algorythm that detects complanar edges
+    va_end(arguments); // Cleans up the list
 
+    return out;
+} //hello?
 */
+
 //returns size of mul. if it is ō - coplanar
 /*
 int isCoplanar(int num, ...)
@@ -169,27 +203,6 @@ int isCoplanar(int num, ...)
 
     return v3len(lastv);
 }*/
-/*
-
-
-*/
-
-
-extern "C" int shitunittest()
-{ //testing it
-    edge ab = {vec3(1,1,1),vec3(1,1,2)};
-    edge bc = {vec3(1,1,2),vec3(1,2,1)};
-    edge ac = {vec3(1,2,1),vec3(1,1,1)};
-    face* myface = edge2face(3,ab,bc,ac);//hmmmm.  this variant. maybe this i think
-    //myface->tex=
-    //move utils to platspec. ? no such dir
-
-    //int shit = isCoplanar(4, a, b, c, d);
-    //printf("shits: %d", shit);//so what to do now? do ohshitgit
-    while (1) 
-        ;
-    return 0; 
-}
 
 
 /*
@@ -208,20 +221,20 @@ float Q_rsqrt( float number )
 }
 Quake III: Arena code
 */
-//what ur operator does? in c++ you can define custom operators
+
 //stick texture to every face. then will try to renderer more complex objects with multi faces
-unsigned int gettexpix(unsigned int* tex,unsigned long long texw,unsigned long long texh,double tu, double tv)
+unsigned int gettexpix(unsigned int *tex, unsigned long long texw, unsigned long long texh, double tu, double tv)
 {
-        // Image is not loaded yet
-        if (tex == 0)
-        {
-            return 0xffffffff;
-        }
-        // using a % operator to cycle/repeat the texture if needed
-        int u = asmmath_abs((int) (tu*texw) % texw);
-        int v = asmmath_abs((int) (tv*texh) % texh);
-        // i have 64 bits, i use all the 64 bits
-        unsigned long long pos = (u + v * texw) * 4;
-        //raw pixel format, 8 bits for red,green,blue,alpha(transparency)
-        return *(unsigned int*)(tex+pos);
+    // Image is not loaded yet
+    if (tex == 0)
+    {
+        return 0xffffffff;
+    }
+    // using a % operator to cycle/repeat the texture if needed
+    int u = asmmath_abs((int)(tu * texw) % texw);
+    int v = asmmath_abs((int)(tv * texh) % texh);
+    // i have 64 bits, i use all the 64 bits
+    unsigned long long pos = (u + v * texw) * 4;
+    //raw pixel format, 8 bits for red,green,blue,alpha(transparency)
+    return *(unsigned int *)(tex + pos);
 }
