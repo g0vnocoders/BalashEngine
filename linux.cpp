@@ -178,18 +178,18 @@ vec3 * platspec_loadOBJ(const char * filename){
     size_t len = 0;
     ssize_t read;
     unsigned int n=1;
-    unsigned int v_count;
-    while ((read = getline(&buffer, &len, obj)) != -1)
-        if(buffer[0]=='v' && buffer[1]==' ')
+    unsigned int v_count=0;
+    while ((read = getline(&buffer, &len, obj)) != -1){
+        if(buffer[0]=='v' && buffer[1]==' '){
             v_count++;
-
+        }
+    }
     rewind (obj);
-
+    std::cout << v_count << std::endl;
     vec3 * ret = new vec3[v_count];
     ret[0]=vec3(v_count,0,0);//two zeros are reserved for other vals from obj
     while ((read = getline(&buffer, &len, obj)) != -1) {
         if(buffer[0]=='v' && buffer[1]==' '){
-            printf(buffer);
             char* shit [3];
             strsep(&buffer, " ");
             shit[0]=strsep(&buffer, " ");
@@ -201,7 +201,6 @@ vec3 * platspec_loadOBJ(const char * filename){
             strtod(shit[2],0x0));
             n++;
         }
-        printf("%s", buffer);
     }
     fclose(obj);
     return ret;

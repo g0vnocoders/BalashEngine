@@ -13,6 +13,8 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "include/matrix.hpp"
+unsigned char* keyarray;
+
 scalar xmove =0; //a d
 scalar ymove =0; //shift space
 scalar zmove =0; //w s
@@ -23,8 +25,41 @@ void *maingamethread(void *unused)
 {
     while (1)
     {
+                if(keyarray){
+            if(keyarray[SDL_SCANCODE_UP]){
+                rot.x-=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_DOWN]){
+                rot.x+=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_LEFT]){
+                rot.y+=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_RIGHT]){
+                rot.y-=0.1 deg;
+            }
+            if(keyarray[SDL_SCANCODE_W]){
+                zmove=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_S]){
+                zmove=-0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_A]){
+                xmove=+0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_D]){
+                xmove=-0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_E]){
+                ymove+=0.1 ;
+            }
+            if(keyarray[SDL_SCANCODE_Q]){
+                ymove-=0.1 ;
+            }
+        }
         platspec_sleep(0.05);
         camera_tick();
+        platspec_sleep(25);
     }
 }
 /*
@@ -95,7 +130,6 @@ texturewh UVMap(texturewh image,vec2 map[], int size){
     return image;
 }
 
-unsigned char* keyarray;
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
@@ -120,18 +154,21 @@ int main(int argc, char **argv)
     }; //remove?
     texturexywh image2=matrix3x3Img(filterimg(image,vec2(300,400)),tr);
     double count=0;
+    extern vec3 pos;
     while (1)
     {//nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
        // count+=0.1 deg;
 
         memset(framebuffer,0,screenwidth*screenheight*4);
+            std::cout << pos.x << std::endl;
 
         matrixticktest(xmove,ymove,zmove,rot,cube);
            xmove=0;
        ymove=0;
        zmove=0;
-        /*
 
+        /*
+    
         for (int x = 0; x < image.width; x++)
         {
             for (int y = 0; y < image.height; y++)
@@ -141,38 +178,7 @@ int main(int argc, char **argv)
         }
         //*/
         //dangiit that's not how it works, use a switch statment
-        if(keyarray){
-            if(keyarray[SDL_SCANCODE_UP]){
-                rot.x-=0.1 deg;
-            }
-            if(keyarray[SDL_SCANCODE_DOWN]){
-                rot.x+=0.1 deg;
-            }
-            if(keyarray[SDL_SCANCODE_LEFT]){
-                rot.y+=0.1 deg;
-            }
-            if(keyarray[SDL_SCANCODE_RIGHT]){
-                rot.y-=0.1 deg;
-            }
-            if(keyarray[SDL_SCANCODE_W]){
-                zmove=0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_S]){
-                zmove=-0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_A]){
-                xmove=+0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_D]){
-                xmove=-0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_E]){
-                ymove+=0.1 ;
-            }
-            if(keyarray[SDL_SCANCODE_Q]){
-                ymove-=0.1 ;
-            }
-        }
+
 
 
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
