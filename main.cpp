@@ -115,6 +115,7 @@ vec3 pos;
 void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 { //why pointer? it is obje
     (*momentum).z*=-1;
+    (*momentum).y*=-1;
     scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z + (*momentum).y * (*momentum).y;
     if (dist >= 0.01)
     {
@@ -141,8 +142,8 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
     matrix4x4 worldToCamera = {0};                 //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
 
-    rotate4x4(&worldToCamera, rot );
     translate4x4(&worldToCamera, pos);
+    rotate4x4(&worldToCamera, rot );
 
 
 
