@@ -143,6 +143,11 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
 
     rotate4x4(&worldToCamera, rot );
     translate4x4(&worldToCamera, pos);
+
+
+
+
+
     setProjectionMatrix(140 deg, 0.01, 100, Mproj); //WTF
     uint numVertices = vertices[0].x;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera

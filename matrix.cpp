@@ -179,8 +179,8 @@ void rotate4x4(matrix4x4 *M, vec3 angle)
     mulm4x4(&temp2, &rotz, &temp3);
     memcpy(M[0][0], &temp3[0][0], 4 * 4 * sizeof(temp[0][0]));
 }
-
-void translate4x4(matrix4x4 *M, vec3 pos)
+//move for GLOBAL coords. for LOCAL (CAMERA for example) use translate4x4!
+void move4x4(matrix4x4 *M, vec3 pos)
 {
     /*
     [ 1 , 0 , 0 , X ]
@@ -199,7 +199,23 @@ void translate4x4(matrix4x4 *M, vec3 pos)
     mulm4x4(&trns, M, &temp);
     memcpy(M, &temp, 4 * 4 * sizeof(scalar));
 }
+void translate4x4(matrix4x4 *M,vec3 pos){
+    scalar xDot = pos.x * (*M)[0][0] +
+                  pos.y * (*M)[1][0] +
+                  pos.z * (*M)[2][0];
 
+    scalar yDot = pos.x * (*M)[0][1] +
+                  pos.y * (*M)[1][1] +
+                  pos.z * (*M)[2][1];
+
+    scalar zDot = pos.x * (*M)[0][2] +
+                  pos.y * (*M)[1][2] +
+                  pos.z * (*M)[2][2];
+
+    (*M)[3][0] = xDot;
+    (*M)[3][1] = -yDot;
+    (*M)[3][2] = zDot;
+}
 
 //this shit also wants to be free(texture.raw). be democratic to malloc.
 texturexywh matrix3x3Img(texturewh image, matrix3x3 m)

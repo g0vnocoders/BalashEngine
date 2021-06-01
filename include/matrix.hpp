@@ -26,7 +26,7 @@ void setProjectionMatrix(const float &FOV, const float &near, const float &far, 
 
 void rotatev3(vec3 *v, vec3 angle);
 void rotate4x4(matrix4x4 *M, vec3 angle);
+void move4x4(matrix4x4 *M, vec3 pos);
 void translate4x4(matrix4x4 *M, vec3 pos);
-
 //this shit also wants to be free(texture.raw). be democratic to malloc.
 texturexywh matrix3x3Img(texturewh image, matrix3x3 m);
