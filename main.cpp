@@ -31,19 +31,19 @@ void *maingamethread(void *unused)
         {
             if (keyarray[SDL_SCANCODE_UP])
             {
-                rot.x -= 0.1 deg;
+                rot.x -= 0.05 deg;
             }
             if (keyarray[SDL_SCANCODE_DOWN])
             {
-                rot.x += 0.1 deg;
+                rot.x += 0.05 deg;
             }
             if (keyarray[SDL_SCANCODE_LEFT])
             {
-                rot.y += 0.1 deg;
+                rot.y += 0.05 deg;
             }
             if (keyarray[SDL_SCANCODE_RIGHT])
             {
-                rot.y -= 0.1 deg;
+                rot.y -= 0.05 deg;
             }
             if (keyarray[SDL_SCANCODE_W])
             {
@@ -114,7 +114,7 @@ vec3 pos;
 
 void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 { //why pointer? it is obje
-    (*momentum).z *= -1;
+    (*momentum).z*=-1;
     scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z + (*momentum).y * (*momentum).y;
     if (dist >= 0.01)
     {
@@ -141,8 +141,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
     matrix4x4 worldToCamera = {0};                 //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
 
-    //moveForward(&worldToCamera,pos);//?? use move fforward xor mojang calcrelativemomentum not both
-    rotate4x4(&worldToCamera, rot * 0.4);
+    rotate4x4(&worldToCamera, rot );
     translate4x4(&worldToCamera, pos);
     setProjectionMatrix(140 deg, 0.01, 100, Mproj); //WTF
     uint numVertices = vertices[0].x;
