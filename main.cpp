@@ -22,7 +22,7 @@ scalar ymove = 0;             //shift space
 scalar zmove = 0;             //w s
 vec3 rot = vec3(0, 0, 0 deg); //<- -> arrows
 unsigned int *framebuffer;
-const unsigned int screenwidth = 1024, screenheight = 768; //lollll
+const unsigned int screenwidth = 700, screenheight = 768; //lollll
 void *maingamethread(void *unused)
 {
     while (1)
@@ -136,14 +136,15 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
 {
     vec3 momentum(xx, yy, zz);
+    rot=rot*0.2;
     calcrelativemomentum(&momentum, 0.4, rot); //fuck, doesn't work
-
+    
     matrix4x4 *Mproj = (matrix4x4 *)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera = {0};                 //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
 
     translate4x4(&worldToCamera, pos);
-    rotate4x4(&worldToCamera, rot*-0.2 );
+    rotate4x4(&worldToCamera, rot );
 
 
 
@@ -200,7 +201,7 @@ int main(int argc, char **argv)
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
     //texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    object objcube = platspec_loadOBJ("snowman.obj");
+    object objcube = platspec_loadOBJ("edrien.obj");
     //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
     //image = UVMap(image, uvs, 3);
     /*object creating algo:
