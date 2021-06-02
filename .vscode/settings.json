@@ -70,7 +70,16 @@
         "unordered_set": "cpp",
         "stop_token": "cpp",
         "typeindex": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "csignal": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "source_location": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp",
+        "cfenv": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
     },
     "python.pythonPath": "/usr/bin/python",
     "makefile.launchConfigurations": [

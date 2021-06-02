@@ -143,7 +143,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
     Identitym4x4(&worldToCamera);
 
     translate4x4(&worldToCamera, pos);
-    rotate4x4(&worldToCamera, rot );
+    rotate4x4(&worldToCamera, rot*-0.2 );
 
 
 
@@ -192,7 +192,7 @@ int main(int argc, char **argv)
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
     texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    vec3 *cube = platspec_loadOBJ("snowman.obj");
+    vec3 *cube = platspec_loadOBJ("cube.obj");
     vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
     image = UVMap(image, uvs, 3);
     /*object creating algo:
