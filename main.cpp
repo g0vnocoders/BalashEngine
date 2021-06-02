@@ -7,7 +7,7 @@
 #include "include/keyboard.hpp"
 #include "include/camera.hpp"
 #include "include/constants.hpp"
-#include <stddef.h>
+#include <cstddef>
 #include <algorithm>
 #include <limits.h>
 #include <SDL2/SDL.h>
@@ -115,7 +115,7 @@ vec3 pos;
 void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 { //why pointer? it is obje
     (*momentum).z*=-1;
-    (*momentum).y*=-1;
+    (*momentum).y*=-1;//hi
     scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z + (*momentum).y * (*momentum).y;
     if (dist >= 0.01)
     {
@@ -144,7 +144,6 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
 
     translate4x4(&worldToCamera, pos);
     rotate4x4(&worldToCamera, rot*-0.2 );
-
 
 
 
@@ -192,7 +191,8 @@ int main(int argc, char **argv)
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
     texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    vec3 *cube = platspec_loadOBJ("cube.obj");
+    object objcube = platspec_loadOBJ("cube.obj");
+    vec3* cube=objcube.vertices;//lol drunk linter didnt cmpin
     vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
     image = UVMap(image, uvs, 3);
     /*object creating algo:

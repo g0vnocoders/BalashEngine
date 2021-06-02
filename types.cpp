@@ -7,10 +7,7 @@
 #include "include/asmmath.hpp"
 #include "include/matrix.hpp"
 #include <stdexcept>
-face::face(edge *faceedge) : uv(0, 0)
-{
-    this->faceedge = faceedge;
-}
+
 //"this" keyword in c++ is actually parent pointer
 vec3::vec3(scalar x, scalar y, scalar z)
 {
@@ -144,24 +141,34 @@ bool vec3::isColinear(vec3 in)
 //btw. separate vectors from faces
 /////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
-
-//invoking (faceobj)[] calls this function
-face face::operator[](unsigned int n)
-{ //look closely as i perform c++ magic  yeah
-    unsigned int counter;
-    face *it;
-    std::exception e;
-    for (int i = 0; counter < i; ++i)
-    {
-        it = it->next;
-        if (!it)
-        {
-
-            throw std::out_of_range("it->next is NULL!!!!!!"); //throw exception if next is nonexistant, so we won't cause segfaults
-        }
-    } //boom, dynamic linked list array
-    return *it;
+face::face(){
+    
+} 
+face::face(size_t v) {
+    this->v_count=v;
+    this->vertices=new vec3[v];
+    return;
 }
+
+
+object::object(size_t  v,size_t  f)
+{
+    this->v_count = v;
+    this->f_count = f;
+    this->vertices=new vec3[v];
+    this->faces=new face[f];
+    return;
+}
+object::~object()
+{
+
+    
+    delete [] this->vertices;
+    delete [] this->faces;//okay so, what to implement. fix errors. compile it. i'll go afk again. thank u
+}//IT WORKS
+
+
+
 
 /*
 //Dont forget to free Face! it is malloced!

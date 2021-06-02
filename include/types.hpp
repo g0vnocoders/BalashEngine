@@ -2,6 +2,7 @@
 #ifndef _types_
 #define _types_
 typedef double scalar;
+#include <cstddef>
 
 class vec2 {
     public:
@@ -42,13 +43,29 @@ public:
 typedef vec3 edge[2];//typedef is pretty brainfuck sometimes
 class face{
     public://well ok
-    edge * faceedge;//uhhh wdym
+    face();
+    face(size_t v);//goddamnit so annoying, i do what i want
+    vec3 * vertices;//uhhh wdym  //no. just question. why vectors dont need it?ola
+    int v_count;
     vec2 uv;    //colour wil be filled instead of texture if texture is null
     unsigned int *tex,colour;//it will store image that loaded. matrix will happen in renderer
-    face operator[](unsigned int n);//c++ magic
-    face* next;
-    face(edge* faceedge);
+    //face operator[](unsigned int n);//c++ magic
+    //face* next;
+    //face(edge* faceedge);
 };
+
+
+class object{
+    public:
+    object(size_t  v,size_t  f);//constructor that will malloc automatically
+    ~object();//deconstructor that will free automatically
+    face * faces;
+    vec3 * vertices;
+    size_t f_count;
+    size_t v_count;
+};
+
+
 
 #define textureRAW unsigned int *;//avoid it
 typedef struct texturewh{//use it everywhere, especially inside objects

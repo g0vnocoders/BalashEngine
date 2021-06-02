@@ -18,6 +18,8 @@ void platspec_sync(){
     syncvar=0;
     while(!syncvar);
 }
+
+
 #define tmp  (unsigned (1 - tx) * (1 - ty)  
 
 void platspec_creategamethread(void*(*func)(void*)){
@@ -171,22 +173,23 @@ texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsig
     return texture;
 }
 
-//don't forget to free, it is malloced
-vec3 * platspec_loadOBJ(const char * filename){//,vec3 ** vertices,vec3 ** faces){
+
+
+
+//don't forget to delete, it is malloced
+object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
     FILE * obj = fopen(filename,"r");
     char * buffer;//buffer to read lines of file
     char * fstr;//Face STRing
     char * vstr;//Value STRing
 
-    vec3 * vertices;//ret
-    vec3 * faces;//ret
-    int count[2];//ret         //try to return all of this
 
     size_t len = 0;//file shit
     ssize_t read;//file shit
-    unsigned int m=0;//loop counter
-    unsigned int v_count=0;
-    unsigned int f_count=0;
+
+    size_t m=0;//loop counter
+    size_t v_count=0;
+    size_t f_count=0;
     while ((read = getline(&buffer, &len, obj)) != -1){
         if(buffer[0]=='v' && buffer[1]==' '){
             v_count++;
@@ -194,15 +197,15 @@ vec3 * platspec_loadOBJ(const char * filename){//,vec3 ** vertices,vec3 ** faces
         if(buffer[0]=='f' && buffer[1]==' '){
             f_count++;
         }
-    }//gets amount of vertices and faces
+    }//get amount of vertices and faces
     rewind (obj);
-    std::cout << v_count << std::endl;
-    vertices = new vec3[v_count];
-    faces = new vec3[f_count];
-    count[0] = v_count;
-    count[1] = f_count;
 
-    v_count=0;//use them for iter
+    object ret = object(v_count,f_count);//(　-_･) ︻デ═一  ▸
+    ret.vertices = new vec3[v_count];
+    ret.faces = new face[f_count];
+    ret.f_count = f_count;
+    ret.v_count = v_count;
+    v_count=0;
     f_count=0;
     while ((read = getline(&buffer, &len, obj)) != -1) {
         if(buffer[0]=='v' && buffer[1]==' '){
@@ -211,7 +214,7 @@ vec3 * platspec_loadOBJ(const char * filename){//,vec3 ** vertices,vec3 ** faces
             shit[0]=strsep(&buffer, " ");
             shit[1]=strsep(&buffer, " ");
             shit[2]=strsep(&buffer, " ");
-            vertices[v_count]=vec3(
+            ret.vertices[v_count]=vec3(
             strtod(shit[0],0x0),   
             strtod(shit[1],0x0),
             strtod(shit[2],0x0));
@@ -223,9 +226,7 @@ vec3 * platspec_loadOBJ(const char * filename){//,vec3 ** vertices,vec3 ** faces
             strsep(&buffer, " ");//remove f letter
             int shit [3];
             while((fstr = strsep(&buffer, " ")) != 0 ){//iter faces thru spaces. got 2/1/1 in fstr
-                //vec3 * face
-                std::cout<<"FACE STARTS"<<std::endl;
-                vstr = strsep(&fstr, "/");
+                vstr = strsep(&fstr, "/");//got 2 from fstr
                 shit[m]=atoi(vstr);
                 //while((vstr = strsep(&fstr, "/")) != 0){//iter face vals. AKA 2 in vstr
                 //    std::cout<<vstr<<", ";  RESERVED FOR  CUTTING EDGE TEXTURE LOADING
@@ -233,13 +234,23 @@ vec3 * platspec_loadOBJ(const char * filename){//,vec3 ** vertices,vec3 ** faces
                 std::cout<<std::endl;
                 m++;
             }
-            faces[f_count]=vec3(shit[0],shit[1],shit[2]);//naively thinking that there are only 3 faces. TODO:
+            ret.faces[f_count]=face(3);
+            ret.faces[f_count].vertices=new vec3[3];
+
+            ret.faces[f_count].vertices[0]=ret.vertices[shit[0]];//TODO:
+            ret.faces[f_count].vertices[1]=ret.vertices[shit[1]];//do normal >3 face 
+            ret.faces[f_count].vertices[2]=ret.vertices[shit[2]];//normal support
+
             m=0;
             f_count++;
         }//parser works. 
         
     }
     fclose(obj);
-    return vertices;
+    
+    
+    
+    
+    return ret;
 }
 #endif
