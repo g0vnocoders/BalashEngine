@@ -200,8 +200,8 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    //texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    object objcube = platspec_loadOBJ("edrien.obj");
+    //texturewh image = platspec_loadTexture("textures/tux.png", 0, 0);
+    object objcube = platspec_loadOBJ("textures/edrien.obj");
     //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
     //image = UVMap(image, uvs, 3);
     /*object creating algo:
