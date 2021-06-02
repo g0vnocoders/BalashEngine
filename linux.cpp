@@ -237,9 +237,9 @@ object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
             ret.faces[f_count]=face(3);
             ret.faces[f_count].vertices=new vec3[3];
 
-            ret.faces[f_count].vertices[0]=ret.vertices[shit[0]];//TODO:
-            ret.faces[f_count].vertices[1]=ret.vertices[shit[1]];//do normal >3 face 
-            ret.faces[f_count].vertices[2]=ret.vertices[shit[2]];//normal support
+            ret.faces[f_count].vertices[0]=ret.vertices[shit[0]-1];//TODO:
+            ret.faces[f_count].vertices[1]=ret.vertices[shit[1]-1];//do normal >3 face 
+            ret.faces[f_count].vertices[2]=ret.vertices[shit[2]-1];//normal support
 
             m=0;
             f_count++;

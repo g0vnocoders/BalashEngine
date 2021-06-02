@@ -133,7 +133,7 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 }
 
 
-void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
+void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
 {
     vec3 momentum(xx, yy, zz);
     calcrelativemomentum(&momentum, 0.4, rot); //fuck, doesn't work
@@ -149,29 +149,38 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, vec3 *vertices)
 
 
     setProjectionMatrix(140 deg, 0.01, 100, Mproj); //WTF
-    uint numVertices = vertices[0].x;
+    uint numFaces = obj->f_count;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera
-    vec2 arrayv2[numVertices];
-    vertices += 1;
-    for (uint32_t i = 0; i < numVertices; ++i)
-    {                                                                                                                              //shit. we need to make it work
-        vec3 vertCamera = mulm4x4andv3(worldToCamera, vec3(vertices[i].x, -vertices[i].y, -vertices[i].z) * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
-        vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
-        if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
-        {
-            continue; //TODO:
+    //vec2 arrayv2[numVertices];
+    for (uint32_t i = 0; i < numFaces; ++i)
+    {                                                                                                                                //shit. we need to make it work
+        face currFace = obj->faces[i];
+        vec2 shit[3];
+        for (uint32_t j = 0; j < currFace.v_count; ++j)
+        {     
+            vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, currFace.vertices[j].z);//crutch, i know that
+            vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
+            vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
+            if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
+            {
+                shit[j]=vec2(0,0);
+                continue; //TODO:
+            }
+            // convert to raster space and mark the position of the vertex in the image with a simple dot
+            scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
+            scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
+            //arrayv2[i] = vec2(x, y);
+
+            //float distance = vertCamera.z * 2;
+            //distance = fmod(distance, 360);
+            //vec3 color = HSV2RGB(distance, 100, 100); //demonstrating z buffer
+            //unsigned char ucolor[4] = {(unsigned char)0xFF, (unsigned char)color.z, (unsigned char)color.y, (unsigned char)color.x};
+            shit[j]=vec2(x,y);
+            //putpix(arrayv2[i].floor(), *(unsigned int *)ucolor);
         }
-        // convert to raster space and mark the position of the vertex in the image with a simple dot
-        scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
-        scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
-        arrayv2[i] = vec2(x, y);
-
-        float distance = vertCamera.z * 2;
-        distance = fmod(distance, 360);
-        vec3 color = HSV2RGB(distance, 100, 100); //demonstrating z buffer
-        unsigned char ucolor[4] = {(unsigned char)0xFF, (unsigned char)color.z, (unsigned char)color.y, (unsigned char)color.x};
-
-        putpix(arrayv2[i].floor(), *(unsigned int *)ucolor);
+        drawline(shit[0],shit[1],0xFFFFFFFF);
+        drawline(shit[1],shit[2],0xFFFFFFFF);
+        drawline(shit[2],shit[0],0xFFFFFFFF);
     }
 
 
@@ -190,11 +199,10 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    object objcube = platspec_loadOBJ("cube.obj");
-    vec3* cube=objcube.vertices;//lol drunk linter didnt cmpin
-    vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
-    image = UVMap(image, uvs, 3);
+    //texturewh image = platspec_loadTexture("tux.png", 0, 0);
+    object objcube = platspec_loadOBJ("snowman.obj");
+    //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
+    //image = UVMap(image, uvs, 3);
     /*object creating algo:
     cube - array of 6 faces
     set geometry
@@ -202,13 +210,13 @@ int main(int argc, char **argv)
     */
     platspec_creategamethread(maingamethread);
 
-    matrix3x3 tr = {
-        //explain perspective transform matrix please
-        {0.5, 0, 0.0}, //0.5 shrinks it
-        {0, 0.5, 0.0},
-        {0.0001, 0, 1},
-    }; //remove?
-    texturexywh image2 = matrix3x3Img(filterimg(image, vec2(300, 400)), tr);
+    //matrix3x3 tr = {
+    //    //explain perspective transform matrix please
+    //    {0.5, 0, 0.0}, //0.5 shrinks it
+    //    {0, 0.5, 0.0},
+    //    {0.0001, 0, 1},
+    //}; //remove?
+    //texturexywh image2 = matrix3x3Img(filterimg(image, vec2(300, 400)), tr);
     double count = 0;
     extern vec3 pos;
     while (1)
@@ -218,7 +226,7 @@ int main(int argc, char **argv)
         memset(framebuffer, 0, screenwidth * screenheight * 4);
         std::cout << pos.x << std::endl;
 
-        matrixticktest(xmove, ymove, zmove, rot, cube);
+        matrixticktest(xmove, ymove, zmove, rot, &objcube);
         xmove = 0;
         ymove = 0;
         zmove = 0;
