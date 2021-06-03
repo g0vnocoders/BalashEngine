@@ -159,7 +159,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
         vec2 shit[3];
         for (uint32_t j = 0; j < currFace.v_count; ++j)
         {     
-            vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, currFace.vertices[j].z);//crutch, i know that
+            vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
             vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
             vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
             if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
@@ -179,9 +179,9 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
             shit[j]=vec2(x,y);
             //putpix(arrayv2[i].floor(), *(unsigned int *)ucolor);
         }
-        drawline(shit[0],shit[1],0xFFFFFFFF);
-        drawline(shit[1],shit[2],0xFFFFFFFF);
-        drawline(shit[2],shit[0],0xFFFFFFFF);
+        drawlinefix(shit[0],shit[1],0xFFFFFFFF);
+        drawlinefix(shit[1],shit[2],0xFFFFFFFF);
+        drawlinefix(shit[2],shit[0],0xFFFFFFFF);
     }
 
 
