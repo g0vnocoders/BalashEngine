@@ -13,7 +13,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "include/matrix.hpp"
-
+#include <ctime>
 #include "include/geometry.hpp"
 unsigned char *keyarray;
 
@@ -192,16 +192,17 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
 
 
 
-
-
-
+clock_t lastTime = clock();
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
     //texturewh image = platspec_loadTexture("textures/tux.png", 0, 0);
-    object objcube = platspec_loadOBJ("textures/edrien.obj");
+    char * path = "textures/cube.obj";
+    if(argc > 1){ path=argv[1];}
+
+    object objcube = platspec_loadOBJ(path);
     //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
     //image = UVMap(image, uvs, 3);
     /*object creating algo:
@@ -223,11 +224,12 @@ int main(int argc, char **argv)
     while (1)
     {   //nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
         // count+=0.1 deg;
-
         memset(framebuffer, 0, screenwidth * screenheight * 4);
-        std::cout << pos.x << std::endl;
-
+        lastTime = clock();
         matrixticktest(xmove, ymove, zmove, rot, &objcube);
+
+        scalar delta = scalar(clock()-lastTime);
+        std::cout << (int)(CLOCKS_PER_SEC/delta) << "FPS\r";
         xmove = 0;
         ymove = 0;
         zmove = 0;
@@ -245,6 +247,7 @@ int main(int argc, char **argv)
         //dangiit that's not how it works, use a switch statment
 
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
+
     }
     __builtin_unreachable();
 }
