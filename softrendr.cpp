@@ -210,10 +210,16 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsi
                         if(!tex)
                               putpix(vec2(x,y),0xffffffff);
                          else {
+                              scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x; //we almost suceed...
+                              scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; //ye. THANK YOU. no normal tutorials. we should make one
+                              const int M=INT16_MAX;//am sorry but is bedtime cannot code
                               
-                              putpix(vec2(x,y),tex->map(vec2((std::min(uv[0].x,std::min(uv[1].x,uv[2].x))+(x-minx))/maxx,(std::min(uv[0].y,std::min(uv[1].y,uv[2].y))+(y-miny))/maxy)));
-
+                              scalar p = (fmod(s * M, 1.0) > 0.5) ^ (fmod(t * M, 1.0) < 0.5); 
+                              unsigned char temp[4]={(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255)};
+                              //too dense
+                              putpix(vec2(x,y),*(unsigned int*)&temp);//later
                         }
+                        
                   }
             }
 
@@ -222,7 +228,7 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsi
 }
 void clearfb()
 {
-      char* 🗿="𓂺bruh𓂸";
+
       //portabillity!!1!!!!!!!!eleven memset:🗿 y 𓂺  some systems might not have memset, for example bare metal shit
       for (unsigned long long i = 0; i < screenwidth * screenheight; ++i)
       {

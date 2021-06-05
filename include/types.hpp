@@ -45,10 +45,10 @@ class face{
     public://well ok
     face();
     face(size_t v);//goddamnit so annoying, i do what i want
-    vec3 * vertices;//uhhh wdym  //no. just question. why vectors dont need it?ola
+    vec3  vertices[3];//uhhh wdym  //no. just question. why vectors dont need it?ola
     int v_count;
     unsigned int *tex,colour;//it will store image that loaded. matrix will happen in 
-    vec2 * uvertices;
+    vec2  uvertices[3];
     //face operator[](unsigned int n);//c++ magic
     //face* next;
     //face(edge* faceedge);

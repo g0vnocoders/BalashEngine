@@ -146,7 +146,6 @@ face::face(){
 } 
 face::face(size_t v) {
     this->v_count=v;
-    this->vertices=new vec3[v];
     return;
 }
 
@@ -156,15 +155,16 @@ object::object(size_t  v,size_t uv,size_t  f)
     this->v_count = v;
     this->uv_count = uv;
     this->f_count = f;
+    this->faces=new face[f];
     this->vertices=new vec3[v];
     this->uvertices=new vec2[uv];
-    this->faces=new face[f];
+
     return;
 }
 object::~object()
 {
 
-    
+    delete[] this->uvertices;
     delete [] this->vertices;
     delete [] this->faces;//okay so, what to implement. fix errors. compile it. i'll go afk again. thank u
 }//IT WORKS
