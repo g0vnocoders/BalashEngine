@@ -7,7 +7,7 @@ vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov);
 extern unsigned int *framebuffer;
 void clearfb();
 extern const unsigned int screenwidth,screenheight;
-void drawtri(face tri);
+void drawtri(vec3 tri[3],texturewh * tex, vec2 * uv);//tex->raw
 texturewh filterimg(texturewh image,vec2 newsz);
 vec3 HSV2RGB(float H, float S,float V);
 inline unsigned int rgba2rgb(unsigned int rgba)

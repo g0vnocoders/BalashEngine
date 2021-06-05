@@ -22,7 +22,7 @@ scalar ymove = 0;             //shift space
 scalar zmove = 0;             //w s
 vec3 rot = vec3(0, 0, 0 deg); //<- -> arrows
 unsigned int *framebuffer;
-const unsigned int screenwidth = 700, screenheight = 768; //lollll
+const unsigned int screenwidth = 1920, screenheight = 1080; //lollll
 void *maingamethread(void *unused)
 {
     while (1)
@@ -133,11 +133,11 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 }
 
 
-void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
+void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,texturewh * tex, vec2 * uv)
 {
     vec3 momentum(xx, yy, zz);
     rot=rot*0.2;
-    calcrelativemomentum(&momentum, 0.4, rot); //fuck, doesn't work
+    calcrelativemomentum(&momentum, 10, rot); //fuck, doesn't work
     
     matrix4x4 *Mproj = (matrix4x4 *)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera = {0};                 //hmmm. should it be 1 or 0?
@@ -153,35 +153,36 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
     uint numFaces = obj->f_count;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera
     //vec2 arrayv2[numVertices];
+    bool debug=false;
     for (uint32_t i = 0; i < numFaces; ++i)
     {                                                                                                                                //shit. we need to make it work
         face currFace = obj->faces[i];
-        vec2 shit[3];
+        //what are you doing
+        //now it is vec3. x y and z buffer val
+        vec3 shit[3];
         for (uint32_t j = 0; j < currFace.v_count; ++j)
         {     
             vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
             vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
+            double aspect = (double)screenwidth/(double)screenheight;
+            vertCamera.y*=aspect;
             vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
-            if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
+            /*if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
             {
-                shit[j]=vec2(0,0);
-                continue; //TODO:
-            }
-            // convert to raster space and mark the position of the vertex in the image with a simple dot
+                //shit[j]=vec3(0,0,0);
+                //continue; //leave it as a comment OKAY
+            }*/
             scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
             scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
             //arrayv2[i] = vec2(x, y);
+//also is there a way to make matrixtick test return original value instead of 0 when theres oob coords
+            //idk disable 0,0,0 is only a temp solution
+            shit[j]=vec3(x,y,vertCamera.z);
 
-            //float distance = vertCamera.z * 2;
-            //distance = fmod(distance, 360);
-            //vec3 color = HSV2RGB(distance, 100, 100); //demonstrating z buffer
-            //unsigned char ucolor[4] = {(unsigned char)0xFF, (unsigned char)color.z, (unsigned char)color.y, (unsigned char)color.x};
-            shit[j]=vec2(x,y);
-            //putpix(arrayv2[i].floor(), *(unsigned int *)ucolor);
-        }
-        drawlinefix(shit[0],shit[1],0xFFFFFFFF);
-        drawlinefix(shit[1],shit[2],0xFFFFFFFF);
-        drawlinefix(shit[2],shit[0],0xFFFFFFFF);
+        }   //fix later.it is triangle fault ok
+            //nothing.
+        drawtri(shit,tex,uv);//draw only one face
+         
     }
 
 
@@ -198,27 +199,15 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    //texturewh image = platspec_loadTexture("textures/tux.png", 0, 0);
+    texturewh image = platspec_loadTexture("textures/water.png", 0, 0);
     char * path = "textures/cube.obj";
     if(argc > 1){ path=argv[1];}
 
     object objcube = platspec_loadOBJ(path);
-    //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
-    //image = UVMap(image, uvs, 3);
-    /*object creating algo:
-    cube - array of 6 faces
-    set geometry
-    set material (apply uv and textures)\
-    */
+    vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
+
     platspec_creategamethread(maingamethread);
 
-    //matrix3x3 tr = {
-    //    //explain perspective transform matrix please
-    //    {0.5, 0, 0.0}, //0.5 shrinks it
-    //    {0, 0.5, 0.0},
-    //    {0.0001, 0, 1},
-    //}; //remove?
-    //texturexywh image2 = matrix3x3Img(filterimg(image, vec2(300, 400)), tr);
     double count = 0;
     extern vec3 pos;
     while (1)
@@ -226,8 +215,10 @@ int main(int argc, char **argv)
         // count+=0.1 deg;
         memset(framebuffer, 0, screenwidth * screenheight * 4);
         lastTime = clock();
-        matrixticktest(xmove, ymove, zmove, rot, &objcube);
-
+        matrixticktest(xmove, ymove, zmove, rot, &objcube,&image,uvs);
+//wheres the code that maps -1-1 coords to screen
+//nowhere. code urself
+//i provided u texture and uv
         scalar delta = scalar(clock()-lastTime);
         std::cout << (int)(CLOCKS_PER_SEC/delta) << "FPS\r";
         xmove = 0;
