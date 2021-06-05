@@ -189,10 +189,14 @@ object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
 
     size_t m=0;//loop counter
     size_t v_count=0;
+    size_t uv_count=0;
     size_t f_count=0;
     while ((read = getline(&buffer, &len, obj)) != -1){
         if(buffer[0]=='v' && buffer[1]==' '){
             v_count++;
+        }
+        if(buffer[0]=='v' && buffer[1]=='t'){
+            uv_count++;
         }
         if(buffer[0]=='f' && buffer[1]==' '){
             f_count++;
@@ -200,12 +204,14 @@ object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
     }//get amount of vertices and faces
     rewind (obj);
 
-    object ret = object(v_count,f_count);//(　-_･) ︻デ═一  ▸
+    object ret = object(v_count,uv_count,f_count);//(　-_･) ︻デ═一  ▸
     ret.vertices = new vec3[v_count];
     ret.faces = new face[f_count];
     ret.f_count = f_count;
     ret.v_count = v_count;
-    v_count=0;
+    ret.uv_count = uv_count;
+    v_count=0;//
+    uv_count=0;
     f_count=0;
     while ((read = getline(&buffer, &len, obj)) != -1) {
         if(buffer[0]=='v' && buffer[1]==' '){
@@ -221,26 +227,43 @@ object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
             v_count++;
             continue;
         }
+        if(buffer[0]=='v' && buffer[1]=='t'){
+            char* shit [2];
+            strsep(&buffer, " ");
+            shit[0]=strsep(&buffer, " ");
+            shit[1]=strsep(&buffer, " ");
+            ret.uvertices[uv_count]=vec2(//make uv
+            strtod(shit[0],0x0),   
+            strtod(shit[1],0x0));
+            uv_count++;
+            continue;
+        }
         if(buffer[0]=='f' && buffer[1]==' '){
             //f 2/1/1 3/2/1 4/3/1
             strsep(&buffer, " ");//remove f letter
             int shit [3];
+            int shit2 [3];
             while((fstr = strsep(&buffer, " ")) != 0 ){//iter faces thru spaces. got 2/1/1 in fstr
                 vstr = strsep(&fstr, "/");//got 2 from fstr
                 shit[m]=atoi(vstr);
-                //while((vstr = strsep(&fstr, "/")) != 0){//iter face vals. AKA 2 in vstr
-                //    std::cout<<vstr<<", ";  RESERVED FOR  CUTTING EDGE TEXTURE LOADING
-                //}
-                std::cout<<std::endl;
+                vstr = strsep(&fstr, "/");//got 1 from fstr
+                shit2[m]=atoi(vstr);
                 m++;
             }
             ret.faces[f_count]=face(3);
+
             ret.faces[f_count].vertices=new vec3[3];
+            ret.faces[f_count].uvertices=new vec2[3];
 
             ret.faces[f_count].vertices[0]=ret.vertices[shit[0]-1];//TODO:
             ret.faces[f_count].vertices[1]=ret.vertices[shit[1]-1];//do normal >3 face 
             ret.faces[f_count].vertices[2]=ret.vertices[shit[2]-1];//normal support
 
+            
+            ret.faces[f_count].uvertices[0]=ret.uvertices[shit2[0]-1];//TODO:
+            ret.faces[f_count].uvertices[1]=ret.uvertices[shit2[1]-1];//do normal >3 face 
+            ret.faces[f_count].uvertices[2]=ret.uvertices[shit2[2]-1];//normal support
+//so now make it work. hard lessons
             m=0;
             f_count++;
         }//parser works. 

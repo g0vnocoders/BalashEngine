@@ -5,9 +5,9 @@ ELFNAME=BalashEngine#checkout to branch cpp
 CXX=c++
 LIBS=`pkg-config --libs --cflags libpng`
 
-CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 #remove -g when release
+CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g#remove -g when release
 CPPFLAGS= $(OPTIMIZE) -g#remove -g when release
-ASFLAGS=
+ASFLAGS=-g
 
 SOURCE:=$(wildcard *.cpp)  
 ASM:=$(wildcard *.S) 

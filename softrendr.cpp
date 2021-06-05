@@ -169,7 +169,7 @@ scalar edgefunc(const vec2 &a, const vec2 &b, const vec2 &c)
 { 
     return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x); 
 } 
-void drawtri(vec3 tri[3],texturewh * tex, vec2 * uv)//tex->raw
+void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsigned ints
 {
       if(!(tri[0].x&&tri[0].y&&tri[1].x&&tri[1].y&&tri[2].x&&tri[2].y)){
             return;
@@ -206,20 +206,20 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2 * uv)//tex->raw
                   double c = edgefunc(vec2(tri[0].x,tri[0].y), vec2(tri[1].x,tri[1].y), p);
             
                   if((a>=0&&b>=0&&c>=0)  ){//freeze or nothing? ONLY FREEZE, doesnt draw black shit
-                  //so anyways, i guess ill just do texed tris
-                  //have you got any tris?  yes, is working.
-                  //fuck. nice
 
-                  //yeah ik, will need to do interpolations. also why does cube appears to be flattened
-                  //idk. need to show screenshot or see myself later.  i think cube is supposed to have all sides equal
-                  //seems to be fisheye effect or smth 
-                        putpix(vec2(x,y),0xffffffff);
-            }
+                        if(!tex)
+                              putpix(vec2(x,y),0xffffffff);
+                         else {
+                              
+                              putpix(vec2(x,y),tex->map(vec2((std::min(uv[0].x,std::min(uv[1].x,uv[2].x))+(x-minx))/maxx,(std::min(uv[0].y,std::min(uv[1].y,uv[2].y))+(y-miny))/maxy)));
+
+                        }
+                  }
             }
 
       }
 
-}//performance is fucking shit, at most 10 fps i think, FIX IT
+}
 void clearfb()
 {
       char* 🗿="𓂺bruh𓂸";

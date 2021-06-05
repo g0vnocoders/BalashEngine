@@ -87,28 +87,6 @@ class face{
 };
 */
 
-//focus on render lol. at least do easy render lol
-//also maybe implement stretching image ok thx. stretching image = matrix
-texturewh UVMap(texturewh image, vec2 map[], int size)
-{
-    for (unsigned int n = 0; n < size; n++)
-    {
-        map[n] = vec2(map[n].x * image.width, map[n].y * image.height); //denormalize map
-    }
-
-    for (unsigned int x = 0; x < image.width; x++)
-    {
-        for (unsigned int y = 0; y < image.height; y++)
-        {
-            if (!isPointInPolygon(vec2(x, y), map, size))
-            {
-                image.raw[x + y * image.width] = 0x0;
-            };
-        }
-    }
-    //TODO:trunc image if possible. to save bytes
-    return image;
-}
 
 vec3 pos;
 
@@ -133,7 +111,7 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 }
 
 
-void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,texturewh * tex, vec2 * uv)
+void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,texturewh * tex)
 {
     vec3 momentum(xx, yy, zz);
     rot=rot*0.2;
@@ -181,7 +159,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
 
         }   //fix later.it is triangle fault ok
             //nothing.
-        drawtri(shit,tex,uv);//draw only one face
+        drawtri(shit,tex,currFace.uvertices);//draw only one face
          
     }
 
@@ -197,9 +175,8 @@ clock_t lastTime = clock();
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
-    //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
 
-    texturewh image = platspec_loadTexture("textures/water.png", 0, 0);
+    texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);
     char * path = "textures/cube.obj";
     if(argc > 1){ path=argv[1];}
 
@@ -210,17 +187,18 @@ int main(int argc, char **argv)
 
     double count = 0;
     extern vec3 pos;
+        //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
+
     while (1)
     {   //nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
         // count+=0.1 deg;
         memset(framebuffer, 0, screenwidth * screenheight * 4);
         lastTime = clock();
-        matrixticktest(xmove, ymove, zmove, rot, &objcube,&image,uvs);
-//wheres the code that maps -1-1 coords to screen
+        matrixticktest(xmove, ymove, zmove, rot, &objcube,&image);
 //nowhere. code urself
 //i provided u texture and uv
         scalar delta = scalar(clock()-lastTime);
-        std::cout << (int)(CLOCKS_PER_SEC/delta) << "FPS\r";
+      //  std::cout << (int)(CLOCKS_PER_SEC/delta) << "FPS\r";
         xmove = 0;
         ymove = 0;
         zmove = 0;

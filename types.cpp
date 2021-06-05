@@ -151,11 +151,13 @@ face::face(size_t v) {
 }
 
 
-object::object(size_t  v,size_t  f)
+object::object(size_t  v,size_t uv,size_t  f)
 {
     this->v_count = v;
+    this->uv_count = uv;
     this->f_count = f;
     this->vertices=new vec3[v];
+    this->uvertices=new vec2[uv];
     this->faces=new face[f];
     return;
 }
@@ -168,8 +170,22 @@ object::~object()
 }//IT WORKS
 
 
+unsigned int texturewh::map(vec2 uv)
+{
+    // Image is not loaded yet
+    if (this->raw == NULL)
+    {
+        return 0x0;
+    } 
+    // using a % operator to cycle/repeat the texture if needed
+    unsigned int u = asmmath_abs(fmod((uv.x*width) , width));
+    unsigned int v = asmmath_abs(fmod((uv.y*height) , height));
+
+    unsigned int pos = (u + v * width);
 
 
+    return this->raw[pos];
+}
 /*
 //Dont forget to free Face! it is malloced!
 face *edge2face(int num, ...)

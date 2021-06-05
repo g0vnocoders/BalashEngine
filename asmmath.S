@@ -14,11 +14,13 @@ asmmath_floor:
 .globl asmmath_vec3cos
 .section .data
 tmp: .quad 0, 0
-mask: .quad 0x7fffffffffffffff
+.align 16
+mask: .quad 0x7fffffffffffffff //turns out that it needs to be aligned to 16 bytes or else it'll segfault.
 .section .text
 asmmath_abs:   
-    andpd mask(%rip)/*64bit assembly hack for dealing with PIE*/,%xmm0
+    andpd mask(%rip),%xmm0
     ret
+
 asmmath_vec3cos:
     fldl (%rdi)
     fcos
