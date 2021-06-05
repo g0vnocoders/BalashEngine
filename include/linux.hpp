@@ -10,3 +10,4 @@ texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsig
 object platspec_loadOBJ(const char * filename);//(　-_･) ︻デ═一  ▸
 
 #endif
+//op
