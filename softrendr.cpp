@@ -169,6 +169,11 @@ scalar edgefunc(const vec2 &a, const vec2 &b, const vec2 &c)
 { 
     return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x); 
 } 
+
+scalar get_distance(vec2 a, vec3 b){
+      vec2 c = vec2(b.x,b.y);
+      return (a+ -c).len();
+}
 void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsigned ints
 {
       if(!(tri[0].x&&tri[0].y&&tri[1].x&&tri[1].y&&tri[2].x&&tri[2].y)){
@@ -210,14 +215,26 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsi
                         if(!tex)
                               putpix(vec2(x,y),0xffffffff);
                          else {
+                              
+                              scalar d1 = get_distance(p, tri[0]);
+                              scalar d2 = get_distance(p, tri[1]);
+                              scalar d3 = get_distance(p, tri[2]);
+
+                              a = (1/d1) / ( (1/d1) + (1/d2) + (1/d3) );
+                              b = (1/d2) / ( (1/d1) + (1/d2) + (1/d3) );
+                              c = 1-a-b;
+
                               scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x; //we almost suceed...
                               scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; //ye. THANK YOU. no normal tutorials. we should make one
-                              const int M=INT16_MAX;//am sorry but is bedtime cannot code
+
+                              
+                              
+                              const int M=1;//am sorry but is bedtime cannot code
                               
                               scalar p = (fmod(s * M, 1.0) > 0.5) ^ (fmod(t * M, 1.0) < 0.5); 
                               unsigned char temp[4]={(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255)};
                               //too dense
-                              putpix(vec2(x,y),*(unsigned int*)&temp);//later
+                              putpix(vec2(x,y),tex->map(vec2(s,t)));//later
                         }
                         
                   }

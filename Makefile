@@ -1,5 +1,5 @@
 BUILDDIR=build
-OPTIMIZE=-Ofast
+OPTIMIZE=-O0
 ELFNAME=BalashEngine#checkout to branch cpp
 
 CXX=c++

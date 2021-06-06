@@ -178,10 +178,10 @@ unsigned int texturewh::map(vec2 uv)
         return 0x0;
     } 
     // using a % operator to cycle/repeat the texture if needed
-    unsigned int u = asmmath_abs(fmod((uv.x*width) , width));
-    unsigned int v = asmmath_abs(fmod((uv.y*height) , height));
+    unsigned int u = asmmath_abs(fmod((uv.x*this->width) , this->width));
+    unsigned int v = asmmath_abs(fmod((uv.y*this->height) ,this->height));
 
-    unsigned int pos = (u + v * width);
+    unsigned int pos = (u + v * this->width);
 
 
     return this->raw[pos];
