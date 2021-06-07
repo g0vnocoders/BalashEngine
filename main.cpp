@@ -160,8 +160,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
         }   //fix later.it is triangle fault ok
             //nothing.
         drawtri(shit,tex,currFace.uvertices);//draw only one face
-         
-    }
+            }
 
 
     delete[] Mproj;
@@ -177,7 +176,7 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
 
     texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);
-    char * path = "textures/cube.obj";
+    char * path = "textures/fixed.obj";
     if(argc > 1){ path=argv[1];}
 
     object objcube = platspec_loadOBJ(path);
