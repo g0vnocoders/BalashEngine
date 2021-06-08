@@ -174,8 +174,7 @@ void rotate4x4(matrix4x4 *M, vec3 angle)
             {asmmath_sin(angle.z), asmmath_cos(angle.z), 0, 0},
             {0, 0, 1, 0},
             {0, 0, 0, 1}};
-    mulm4x4(M, &rotx, &temp);
-    mulm4x4(&temp, &roty, &temp2);
+    mulm4x4(M, &rotx, &temp);    mulm4x4(&temp, &roty, &temp2);
     mulm4x4(&temp2, &rotz, &temp3);
     memcpy(M[0][0], &temp3[0][0], 4 * 4 * sizeof(temp[0][0]));
 }

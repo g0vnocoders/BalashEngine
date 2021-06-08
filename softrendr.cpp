@@ -165,21 +165,15 @@ texturewh filterimg(texturewh image, vec2 newsz)
       image.raw = ret.raw;
       return image;
 } 
-scalar edgefunc(const vec2 &a, const vec2 &b, const vec2 &c) 
-{ 
-    return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x); 
-} 
 
 scalar get_distance(vec2 a, vec3 b){
       vec2 c = vec2(asmmath_floor(a.x-b.x),asmmath_floor(a.y-b.y));
       return asmmath_sqrt(c.x*c.x + c.y*c.y);
       //return (a+ -c).len();
 }
-void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsigned ints
+void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->raw for ur unsigned ints
 {
-      if(!(tri[0].x&&tri[0].y&&tri[1].x&&tri[1].y&&tri[2].x&&tri[2].y)){
-            return;
-      }
+   
       extern vec3 camera_pos, camera_orientation;
       extern double game_fov;
 
@@ -189,64 +183,59 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3])//use tex->raw for ur unsi
       scalar minx = screenwidth, miny = screenheight, maxx = 0, maxy = 0;
 
  
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < 3; ++i)
       {
             minx = asmmath_min(tri[i].x, minx);
             miny = asmmath_min(tri[i].y, miny);
             maxx = asmmath_max(tri[i].x, maxx);
             maxy = asmmath_max(tri[i].y, maxy);
+
       }
 
 
 
-
-
-      for (long long x = minx; x < maxx; x++)//try
+      for ( int x =minx; x < maxx; x++)//try
       {
-            for (long long y = miny; y < maxy; y++)
+            for ( int y = miny; y < maxy; y++)
             {
+                  if(x>screenwidth||y>screenheight)continue;
                   p.x=x+0.5;
                   p.y=y+0.5;
-                  double a = edgefunc(vec2(tri[1].x,tri[1].y), vec2(tri[2].x,tri[2].y), p); 
-                  double b = edgefunc(vec2(tri[2].x,tri[2].y), vec2(tri[0].x,tri[0].y), p); //btw
-                  double c = edgefunc(vec2(tri[0].x,tri[0].y), vec2(tri[1].x,tri[1].y), p);
-            
-                  if((a>=0&&b>=0&&c>=0)  ){//freeze or nothing? ONLY FREEZE, doesnt draw black shit
 
+                  register scalar var0=(tri[1].y-tri[2].y);
+                  register scalar var1=(tri[0].x-tri[2].x);
+                  register scalar var2=(p.x-tri[2].x);
+                  register scalar var3=(tri[2].x-tri[1].x);
+                  register scalar var4=(p.y-tri[2].y);
+                  register scalar var5=var0*var1;
+                  register scalar var6=(tri[0].y-tri[2].y);
+                  double a=((var0*var2)+var3*var4)/
+                  (var5+var3*var6);
+                  
+                  double b=(((tri[2].y-tri[0].y)*var2)+var1*var4)/
+                  (var5+var3*var6);
+                  double c = 1-a-b;
+                  if((a>=0&&b>=0&&c>=0)  ){
                         if(!tex)
                               putpix(vec2(x,y),0xffffffff);
                          else {
                               
-                              scalar d1 = get_distance(p, tri[0]);
-                              scalar d2 = get_distance(p, tri[1]);
-                              scalar d3 = get_distance(p, tri[2]);
-                              a=(((tri[1].y-tri[2].y)*(p.x-tri[2].x))+(tri[2].x-tri[1].x)*(p.y-tri[2].y))/
-                              (((tri[1].y-tri[2].y)*(tri[0].x-tri[2].x))+(tri[2].x-tri[1].x)*(tri[0].y-tri[2].y));
-                              
-                              b=(((tri[2].y-tri[0].y)*(p.x-tri[2].x))+(tri[0].x-tri[2].x)*(p.y-tri[2].y))/
-                              (((tri[1].y-tri[2].y)*(tri[0].x-tri[2].x))+(tri[2].x-tri[1].x)*(tri[0].y-tri[2].y));
-                              
-                              
-                              //a = (1/d1) / ( (1/d1) + (1/d2) + (1/d3) );
-                              //b = (1/d2) / ( (1/d1) + (1/d2) + (1/d3) );
-                              c = 1-a-b;
+                              double oneOverZ = tri[0].z * a + tri[1].z * b + tri[2].z * c; 
+                              double zz = 1 / oneOverZ; //check division by zero
 
-                              scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x; //we almost suceed...
-                              scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; //ye. THANK YOU. no normal tutorials. we should make one
-
-                              
-                              
-                              const int M=1;//am sorry but is bedtime cannot code
-                              
-                              //scalar pr = (fmod(s * M, 1.0) > 0.5) ^ (fmod(t * M, 1.0) < 0.5); 
-                              //unsigned char temp[4]={(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255),(unsigned char)(p*255)};
-                              //too dense
-                              putpix(vec2(x,y),tex->map(vec2(s,t)));//later
+                              scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x;
+                              scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; 
+                              if(x<screenwidth&&y<screenheight&&x>0&&y>0)
+                              if(zbuff[x+y*screenwidth] < zz){
+                                    zbuff[x+y*screenwidth] = zz;
+                                    putpix(vec2((uint)x,(uint)y),tex->map(vec2(s,t)));//later
+                              }
                         }
-                        
                   }
+                  
             }
 
+      
       }
 
 }

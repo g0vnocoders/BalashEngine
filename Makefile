@@ -1,12 +1,12 @@
 BUILDDIR=build
-OPTIMIZE=-O0
+OPTIMIZE=-Ofast -msse4 -mfpmath=sse -march=native -mavx2 -mpopcnt -mbmi2 -fprofile-use
 ELFNAME=BalashEngine#checkout to branch cpp
 
 CXX=c++
 LIBS=`pkg-config --libs --cflags libpng`
 
-CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g#remove -g when release
-CPPFLAGS= $(OPTIMIZE) -g#remove -g when release
+CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g -fno-pie -fno-PIC#remove -g when release 
+CPPFLAGS= $(OPTIMIZE) -g -fno-pie -fno-PIC  #remove -g when release
 ASFLAGS=-g
 
 SOURCE:=$(wildcard *.cpp)  

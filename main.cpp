@@ -16,7 +16,7 @@
 #include <ctime>
 #include "include/geometry.hpp"
 unsigned char *keyarray;
-
+scalar *zbuf;
 scalar xmove = 0;             //a d
 scalar ymove = 0;             //shift space
 scalar zmove = 0;             //w s
@@ -109,6 +109,7 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
         pos.y += (*momentum).y * cos + (*momentum).y * sin;
     }
 }
+clock_t lastTime = clock();
 
 
 void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,texturewh * tex)
@@ -159,7 +160,9 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
 
         }   //fix later.it is triangle fault ok
             //nothing.
-        drawtri(shit,tex,currFace.uvertices);//draw only one face
+
+        drawtri(shit,tex,currFace.uvertices,zbuf);//draw only one face
+
             }
 
 
@@ -169,15 +172,15 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
 }
 
 
-
-clock_t lastTime = clock();
+int skip=0;
+bool frame_skip=false;
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
-
-    texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);
+    zbuf=new scalar[screenwidth*screenheight];
+    texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);//path to castle texture please
     char * path = "textures/fixed.obj";
-    if(argc > 1){ path=argv[1];}
+    if(argc > 1){ path=argv[1];}//./build/BalashEngine path/to/obj
 
     object objcube = platspec_loadOBJ(path);
     vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
@@ -187,33 +190,33 @@ int main(int argc, char **argv)
     double count = 0;
     extern vec3 pos;
         //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
-
+    clock_t current_time;
     while (1)
     {   //nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
-        // count+=0.1 deg;
         memset(framebuffer, 0, screenwidth * screenheight * 4);
-        lastTime = clock();
-        matrixticktest(xmove, ymove, zmove, rot, &objcube,&image);
-//nowhere. code urself
-//i provided u texture and uv
-        scalar delta = scalar(clock()-lastTime);
-      //  std::cout << (int)(CLOCKS_PER_SEC/delta) << "FPS\r";
+        std::fill_n(zbuf, screenwidth*screenheight, __DBL_MIN__);
+        if(skip){
+                --skip;
+        frame_skip=false;
+
+        }
+        else ;
+                 current_time=clock();
+
+        if((scalar)(((scalar)current_time-(scalar)lastTime)/(scalar)CLOCKS_PER_SEC)>0.03333333333/*<30FPS*/){
+            skip=2;
+            frame_skip=true;
+        }       
+ lastTime=clock();
+                if(!frame_skip)
+                matrixticktest(xmove, ymove, zmove, rot, &objcube,&image);
         xmove = 0;
         ymove = 0;
         zmove = 0;
 
-        /*
-    
-        for (int x = 0; x < image.width; x++)
-        {
-            for (int y = 0; y < image.height; y++)
-            {
-                //putpix(vec2(x, y), image.raw[x+y * image.width] );
-            }
-        }
-        //*/
-        //dangiit that's not how it works, use a switch statment
 
+        //dangiit that's not how it works, use a switch statment
+        if(!frame_skip)
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
 
     }

@@ -18,32 +18,7 @@ tmp: .quad 0, 0
 mask: .quad 0x7fffffffffffffff //turns out that it needs to be aligned to 16 bytes or else it'll segfault.
 .section .text
 asmmath_abs:   
-    andpd mask(%rip),%xmm0
-    ret
-
-asmmath_vec3cos:
-    fldl (%rdi)
-    fcos
-    fstpl (%rdi)
-    fldl 8(%rdi)
-    fcos
-    fstpl 8(%rdi)
-    fldl 16(%rdi)
-    fcos
-    fstpl 16(%rdi)
-    movq %rdi,%rax
-    ret
-asmmath_vec3sin:
-    fldl (%rdi)
-    fsin
-    fstpl (%rdi)
-    fldl 8(%rdi)
-    fsin
-    fstpl 8(%rdi)
-    fldl 16(%rdi)
-    fsin
-    fstpl 16(%rdi)
-    movq %rdi,%rax
+    andpd mask,%xmm0
     ret
 
 asmmath_tan:
@@ -82,13 +57,11 @@ asmmath_sqrt:
 retc:
     ret
 asmmath_min:
-    comisd %xmm1,%xmm0
-    jbe retc
-    movq %xmm1, %xmm0
+    minpd %xmm0,%xmm1
+    movq %xmm1,%xmm0
     ret
 asmmath_max:
-    comisd %xmm0,%xmm1
-    jbe retc
-    movq %xmm1, %xmm0
+    maxpd %xmm0,%xmm1
+    movq %xmm1,%xmm0
     ret
     
