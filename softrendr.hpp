@@ -6,7 +6,7 @@ void drawline(vec2 start,vec2 end,unsigned int color);
 vec2 calc2dcoords(vec3 campos,vec3 pos,vec3 camori,double fov);
 extern unsigned int *framebuffer;
 void clearfb();
-extern const unsigned int screenwidth,screenheight;
+extern const  int screenwidth,screenheight;
 void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff);//use tex->raw for ur unsigned ints
 texturewh filterimg(texturewh image,vec2 newsz);
 extern scalar* zbuf;

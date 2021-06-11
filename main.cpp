@@ -15,6 +15,7 @@
 #include "include/matrix.hpp"
 #include <ctime>
 #include "include/geometry.hpp"
+#include <cassert>
 unsigned char *keyarray;
 scalar *zbuf;
 scalar xmove = 0;             //a d
@@ -22,7 +23,7 @@ scalar ymove = 0;             //shift space
 scalar zmove = 0;             //w s
 vec3 rot = vec3(0, 0, 0 deg); //<- -> arrows
 unsigned int *framebuffer;
-const unsigned int screenwidth = 1920, screenheight = 1080; //lollll
+const  int screenwidth = 1920, screenheight = 1080; //lollll
 void *maingamethread(void *unused)
 {
     while (1)
@@ -132,14 +133,13 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
     uint numFaces = obj->f_count;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera
     //vec2 arrayv2[numVertices];
-    bool debug=false;
     for (uint32_t i = 0; i < numFaces; ++i)
     {                                                                                                                                //shit. we need to make it work
         face currFace = obj->faces[i];
         //what are you doing
         //now it is vec3. x y and z buffer val
         vec3 shit[3];
-        for (uint32_t j = 0; j < currFace.v_count; ++j)
+        for (uint32_t j = 0; j <(uint32_t) currFace.v_count; ++j)
         {     
             vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
             vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
@@ -179,16 +179,12 @@ int main(int argc, char **argv)
     framebuffer = (unsigned int *)platspec_getframebuffer();
     zbuf=new scalar[screenwidth*screenheight];
     texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);//path to castle texture please
-    char * path = "textures/fixed.obj";
+    char * path = (char*)"textures/fixed.obj";
     if(argc > 1){ path=argv[1];}//./build/BalashEngine path/to/obj
 
     object objcube = platspec_loadOBJ(path);
-    vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
-
     platspec_creategamethread(maingamethread);
 
-    double count = 0;
-    extern vec3 pos;
         //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
     clock_t current_time;
     while (1)
@@ -200,7 +196,6 @@ int main(int argc, char **argv)
         frame_skip=false;
 
         }
-        else ;
                  current_time=clock();
 
         if((scalar)(((scalar)current_time-(scalar)lastTime)/(scalar)CLOCKS_PER_SEC)>0.03333333333/*<30FPS*/){

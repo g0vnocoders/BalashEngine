@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <math.h>
-
+#include <cassert>
 
 void drawline(vec2 start, vec2 end, unsigned int color)
 {
@@ -144,7 +144,6 @@ texturewh filterimg(texturewh image, vec2 newsz)
 {
       texturewh ret;
       ret.raw = (unsigned int *)malloc((unsigned long)newsz.x * newsz.y * 4);
-      unsigned int *c = ret.raw;
       ret.height = newsz.y;
       ret.width = newsz.x;
       for (long width = 0; width < newsz.x; ++width)
@@ -171,25 +170,25 @@ scalar get_distance(vec2 a, vec3 b){
       return asmmath_sqrt(c.x*c.x + c.y*c.y);
       //return (a+ -c).len();
 }
+extern double tmp;
 void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->raw for ur unsigned ints
 {
    
-      extern vec3 camera_pos, camera_orientation;
-      extern double game_fov;
 
                         vec2 p(0, 0);
       //need to compute bbox. better performance
 
       scalar minx = screenwidth, miny = screenheight, maxx = 0, maxy = 0;
 
- 
+      scalar *max_ret,*min_ret;
       for (int i = 0; i < 3; ++i)
       {
-            minx = asmmath_min(tri[i].x, minx);
-            miny = asmmath_min(tri[i].y, miny);
-            maxx = asmmath_max(tri[i].x, maxx);
-            maxy = asmmath_max(tri[i].y, maxy);
-
+            min_ret = asmmath_min_simd(tri[i].x, tri[i].y,minx,miny);
+            minx=min_ret[0];
+            miny=min_ret[1];
+            max_ret = asmmath_max_simd(tri[i].x, tri[i].y,maxx,maxy);
+            maxx=max_ret[0];
+            maxy=max_ret[1];
       }
 
 
@@ -243,7 +242,7 @@ void clearfb()
 {
 
       //portabillity!!1!!!!!!!!eleven memset:🗿 y 𓂺  some systems might not have memset, for example bare metal shit
-      for (unsigned long long i = 0; i < screenwidth * screenheight; ++i)
+      for (int i = 0; i < screenwidth * screenheight; ++i)
       {
             framebuffer[i] = 0;
       }

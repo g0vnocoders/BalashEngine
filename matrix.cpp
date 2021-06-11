@@ -85,7 +85,6 @@ void setProjectionMatrix(const float &FOV, const float &near, const float &far, 
     (*M)[2][2] = -far / (far - near);
     (*M)[2][3] = -(far + near) / (far - near);
     //this works. TESTED!
-    matrix4x4 rot = {0};
 }
 void rotatev3(vec3 *v, vec3 angle)
 {

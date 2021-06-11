@@ -138,7 +138,6 @@ texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsig
     row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
     for (unsigned int y = 0; y < height; y++)
     {
-        auto shit = png_get_rowbytes(png_ptr, info_ptr);
         row_pointers[y] = (png_bytep )malloc(png_get_rowbytes(png_ptr, info_ptr));
     }
     png_read_image(png_ptr, (png_bytep*)row_pointers);
@@ -153,7 +152,7 @@ texturewh platspec_loadTexture(const char *filename, unsigned int widthin, unsig
     texture.raw = new unsigned int[imgbytes];
     texture.width=widthin;
     texture.height=heightin;
-    for (int y = 0; y < heightin; y++)
+    for (int y = 0; y <(int) heightin; y++)
 
     {
         for (unsigned int x = 0; x < widthin; x++)

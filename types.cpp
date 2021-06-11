@@ -96,7 +96,7 @@ vec2 vec2::floor()
 
 bool vec2::operator==(vec2 in)
 {
-    if (in.x == this->x & in.y == this->y)
+    if ((in.x == this->x )&& (in.y == this->y))
         return true;
     else
         return false;

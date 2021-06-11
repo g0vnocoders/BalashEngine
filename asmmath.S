@@ -7,6 +7,10 @@
 .globl asmmath_abs
 .globl asmmath_min
 .globl asmmath_max
+.globl asmmath_max_simd
+.globl asmmath_min_simd
+
+.globl tmp
 asmmath_floor:
     roundsd $9,%xmm0,%xmm0
     ret
@@ -54,8 +58,7 @@ asmmath_sqrt:
     fstpl tmp(%rip)
     movq tmp(%rip),%xmm0
     ret
-retc:
-    ret
+
 asmmath_min:
     minpd %xmm0,%xmm1
     movq %xmm1,%xmm0
@@ -64,4 +67,23 @@ asmmath_max:
     maxpd %xmm0,%xmm1
     movq %xmm1,%xmm0
     ret
-    
+asmmath_min_simd:
+
+    movq %xmm1,tmp
+    movhpd tmp,%xmm0
+    movq %xmm3,tmp
+    movhpd tmp,%xmm2
+    minpd %xmm0,%xmm2
+    movdqa %xmm2,tmp
+    movq $tmp,%rax
+    ret
+asmmath_max_simd:
+
+    movq %xmm1,tmp
+    movhpd tmp,%xmm0
+    movq %xmm3,tmp
+    movhpd tmp,%xmm2
+    maxpd %xmm0,%xmm2
+    movdqa %xmm2,tmp
+    movq $tmp,%rax
+    ret
