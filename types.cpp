@@ -96,7 +96,7 @@ vec2 vec2::floor()
 
 bool vec2::operator==(vec2 in)
 {
-    if (in.x == this->x & in.y == this->y)
+    if ((in.x == this->x )&& (in.y == this->y))
         return true;
     else
         return false;
@@ -146,30 +146,46 @@ face::face(){
 } 
 face::face(size_t v) {
     this->v_count=v;
-    this->vertices=new vec3[v];
     return;
 }
 
 
-object::object(size_t  v,size_t  f)
+object::object(size_t  v,size_t uv,size_t  f)
 {
     this->v_count = v;
+    this->uv_count = uv;
     this->f_count = f;
-    this->vertices=new vec3[v];
     this->faces=new face[f];
+    this->vertices=new vec3[v];
+    this->uvertices=new vec2[uv];
+
     return;
 }
 object::~object()
 {
 
-    
+    delete[] this->uvertices;
     delete [] this->vertices;
     delete [] this->faces;//okay so, what to implement. fix errors. compile it. i'll go afk again. thank u
 }//IT WORKS
 
 
+unsigned int texturewh::map(vec2 uv)
+{
+    // Image is not loaded yet
+    if (this->raw == NULL)
+    {
+        return 0x0;
+    } 
+    // using a % operator to cycle/repeat the texture if needed
+    unsigned int u = asmmath_abs(fmod((uv.x*this->width) , this->width));
+    unsigned int v =this->height- asmmath_abs(fmod((uv.y*this->height) ,this->height));
+
+    unsigned int pos = (u + v * this->width);
 
 
+    return this->raw[pos];
+}
 /*
 //Dont forget to free Face! it is malloced!
 face *edge2face(int num, ...)

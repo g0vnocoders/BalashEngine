@@ -13,16 +13,17 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "include/matrix.hpp"
-
+#include <ctime>
 #include "include/geometry.hpp"
+#include <cassert>
 unsigned char *keyarray;
-
+scalar *zbuf;
 scalar xmove = 0;             //a d
 scalar ymove = 0;             //shift space
 scalar zmove = 0;             //w s
 vec3 rot = vec3(0, 0, 0 deg); //<- -> arrows
 unsigned int *framebuffer;
-const unsigned int screenwidth = 1024, screenheight = 768; //lollll
+const  int screenwidth = 1920, screenheight = 1080; //lollll
 void *maingamethread(void *unused)
 {
     while (1)
@@ -87,28 +88,6 @@ class face{
 };
 */
 
-//focus on render lol. at least do easy render lol
-//also maybe implement stretching image ok thx. stretching image = matrix
-texturewh UVMap(texturewh image, vec2 map[], int size)
-{
-    for (unsigned int n = 0; n < size; n++)
-    {
-        map[n] = vec2(map[n].x * image.width, map[n].y * image.height); //denormalize map
-    }
-
-    for (unsigned int x = 0; x < image.width; x++)
-    {
-        for (unsigned int y = 0; y < image.height; y++)
-        {
-            if (!isPointInPolygon(vec2(x, y), map, size))
-            {
-                image.raw[x + y * image.width] = 0x0;
-            };
-        }
-    }
-    //TODO:trunc image if possible. to save bytes
-    return image;
-}
 
 vec3 pos;
 
@@ -131,23 +110,25 @@ void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
         pos.y += (*momentum).y * cos + (*momentum).y * sin;
     }
 }
+clock_t lastTime = clock();
 
 
-void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
+void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,texturewh * tex)
 {
     vec3 momentum(xx, yy, zz);
-    calcrelativemomentum(&momentum, 0.4, rot); //fuck, doesn't work
-
+    rot=rot*0.2;
+    calcrelativemomentum(&momentum, 10, rot); //fuck, doesn't work
+    
     matrix4x4 *Mproj = (matrix4x4 *)new matrix4x4; //need to configure this shit
     matrix4x4 worldToCamera = {0};                 //hmmm. should it be 1 or 0?
     Identitym4x4(&worldToCamera);
 
     translate4x4(&worldToCamera, pos);
-    rotate4x4(&worldToCamera, rot*-0.2 );
+    rotate4x4(&worldToCamera, rot );
 
 
 
-
+    bool nodrawtri=true;
     setProjectionMatrix(140 deg, 0.01, 100, Mproj); //WTF
     uint numFaces = obj->f_count;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera
@@ -155,33 +136,35 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
     for (uint32_t i = 0; i < numFaces; ++i)
     {                                                                                                                                //shit. we need to make it work
         face currFace = obj->faces[i];
-        vec2 shit[3];
-        for (uint32_t j = 0; j < currFace.v_count; ++j)
+        //what are you doing
+        //now it is vec3. x y and z buffer val
+        vec3 shit[3];
+        for (uint32_t j = 0; j <(uint32_t) currFace.v_count; ++j)
         {     
-            vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, currFace.vertices[j].z);//crutch, i know that
-            vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
+            vec3 got = vec3(currFace.vertices[j].x, -currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
+            vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 200)); //swap vars. stop will watch smth
+            double aspect = (double)screenwidth/(double)screenheight;
+            vertCamera.y*=aspect;
             vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
             if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
             {
-                shit[j]=vec2(0,0);
-                continue; //TODO:
+                //shit[j]=vec3(0,0,0);
+                //continue; //leave it as a comment OKAY
+                nodrawtri=true;
             }
-            // convert to raster space and mark the position of the vertex in the image with a simple dot
             scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
             scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
             //arrayv2[i] = vec2(x, y);
+//also is there a way to make matrixtick test return original value instead of 0 when theres oob coords
+            //idk disable 0,0,0 is only a temp solution
+            shit[j]=vec3(x,y,vertCamera.z);
 
-            //float distance = vertCamera.z * 2;
-            //distance = fmod(distance, 360);
-            //vec3 color = HSV2RGB(distance, 100, 100); //demonstrating z buffer
-            //unsigned char ucolor[4] = {(unsigned char)0xFF, (unsigned char)color.z, (unsigned char)color.y, (unsigned char)color.x};
-            shit[j]=vec2(x,y);
-            //putpix(arrayv2[i].floor(), *(unsigned int *)ucolor);
-        }
-        drawline(shit[0],shit[1],0xFFFFFFFF);
-        drawline(shit[1],shit[2],0xFFFFFFFF);
-        drawline(shit[2],shit[0],0xFFFFFFFF);
-    }
+        }   //fix later.it is triangle fault ok
+            //nothing.
+
+            if(nodrawtri==false){drawtri(shit,tex,currFace.uvertices,zbuf);}//draw only one face
+            nodrawtri=false;
+            }
 
 
     delete[] Mproj;
@@ -190,60 +173,48 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj)
 }
 
 
-
-
-
-
+int skip=0;
+bool frame_skip=false;
 int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
-    //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
+    zbuf=new scalar[screenwidth*screenheight];
+    texturewh image = platspec_loadTexture("textures/newedrien.png", 0, 0);//path to castle texture please
+    char * path = (char*)"textures/edrien.obj";
+    if(argc > 1){ path=argv[1];}//./build/BalashEngine path/to/obj
 
-    //texturewh image = platspec_loadTexture("tux.png", 0, 0);
-    object objcube = platspec_loadOBJ("snowman.obj");
-    //vec2 uvs[] = {vec2(0, 0.5), vec2(0, 1), vec2(1, 1)};
-    //image = UVMap(image, uvs, 3);
-    /*object creating algo:
-    cube - array of 6 faces
-    set geometry
-    set material (apply uv and textures)\
-    */
+    object objcube = platspec_loadOBJ(path);
     platspec_creategamethread(maingamethread);
 
-    //matrix3x3 tr = {
-    //    //explain perspective transform matrix please
-    //    {0.5, 0, 0.0}, //0.5 shrinks it
-    //    {0, 0.5, 0.0},
-    //    {0.0001, 0, 1},
-    //}; //remove?
-    //texturexywh image2 = matrix3x3Img(filterimg(image, vec2(300, 400)), tr);
-    double count = 0;
-    extern vec3 pos;
+        //RENDER LOOP!!!!!!!!!!! DO NOT CONFUSE WITH GAME LOOP
+    clock_t current_time;
     while (1)
     {   //nothing. ohhhh shiiiit. but before that you saw some dots, rightyes? i thik
-        // count+=0.1 deg;
-
         memset(framebuffer, 0, screenwidth * screenheight * 4);
-        std::cout << pos.x << std::endl;
+        std::fill_n(zbuf, screenwidth*screenheight, __DBL_MIN__);
+        if(skip){
+                --skip;
+        frame_skip=false;
 
-        matrixticktest(xmove, ymove, zmove, rot, &objcube);
+        }
+                 current_time=clock();
+
+        if((scalar)(((scalar)current_time-(scalar)lastTime)/(scalar)CLOCKS_PER_SEC)>0.03333333333/*<30FPS*/){
+            skip=2;
+            frame_skip=true;
+        }       
+ lastTime=clock();
+                if(!frame_skip)
+                matrixticktest(xmove, ymove, zmove, rot, &objcube,&image);
         xmove = 0;
         ymove = 0;
         zmove = 0;
 
-        /*
-    
-        for (int x = 0; x < image.width; x++)
-        {
-            for (int y = 0; y < image.height; y++)
-            {
-                //putpix(vec2(x, y), image.raw[x+y * image.width] );
-            }
-        }
-        //*/
-        //dangiit that's not how it works, use a switch statment
 
+        //dangiit that's not how it works, use a switch statment
+        if(!frame_skip)
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
+
     }
     __builtin_unreachable();
 }

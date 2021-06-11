@@ -45,10 +45,10 @@ class face{
     public://well ok
     face();
     face(size_t v);//goddamnit so annoying, i do what i want
-    vec3 * vertices;//uhhh wdym  //no. just question. why vectors dont need it?ola
+    vec3  vertices[3];//uhhh wdym  //no. just question. why vectors dont need it?ola
     int v_count;
-    vec2 uv;    //colour wil be filled instead of texture if texture is null
-    unsigned int *tex,colour;//it will store image that loaded. matrix will happen in renderer
+    unsigned int *tex,colour;//it will store image that loaded. matrix will happen in 
+    vec2  uvertices[3];
     //face operator[](unsigned int n);//c++ magic
     //face* next;
     //face(edge* faceedge);
@@ -57,21 +57,25 @@ class face{
 
 class object{
     public:
-    object(size_t  v,size_t  f);//constructor that will malloc automatically
+    object(size_t  v,size_t  uv,size_t  f);//constructor that will malloc automatically
     ~object();//deconstructor that will free automatically
     face * faces;
     vec3 * vertices;
+    vec2 * uvertices;
     size_t f_count;
+    size_t uv_count;
     size_t v_count;
 };
 
 
+typedef unsigned int rgbapixel;
 
 #define textureRAW unsigned int *;//avoid it
 typedef struct texturewh{//use it everywhere, especially inside objects
     unsigned int width;
     unsigned int height;
     unsigned int * raw;
+    unsigned int map(vec2 uv);
 } texturewh;
 typedef struct texturexywh : texturewh{//use it FOR RENDERER ONLY. it uses offset especially for it
     public:

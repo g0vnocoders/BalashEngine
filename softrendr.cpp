@@ -1,10 +1,12 @@
 #include "softrendr.hpp"
 #include "include/asmmath.hpp"
 #include "include/types.hpp"
+
+#include "include/geometry.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <math.h>
-
+#include <cassert>
 
 void drawline(vec2 start, vec2 end, unsigned int color)
 {
@@ -81,10 +83,7 @@ void drawline(vec2 start, vec2 end, unsigned int color)
             }
       }
 }
-double edgefunc(vec2 a, vec2 b, vec2 p)
-{
-      return ((p.x - a.x) * (b.y - a.y) + (p.y - a.y) * (b.x - a.x));
-}
+
 class rgbacolor
 {
 public:
@@ -145,7 +144,6 @@ texturewh filterimg(texturewh image, vec2 newsz)
 {
       texturewh ret;
       ret.raw = (unsigned int *)malloc((unsigned long)newsz.x * newsz.y * 4);
-      unsigned int *c = ret.raw;
       ret.height = newsz.y;
       ret.width = newsz.x;
       for (long width = 0; width < newsz.x; ++width)
@@ -165,38 +163,85 @@ texturewh filterimg(texturewh image, vec2 newsz)
       free(image.raw);
       image.raw = ret.raw;
       return image;
-} /*
-void drawtri(face tri)
+} 
+
+scalar get_distance(vec2 a, vec3 b){
+      vec2 c = vec2(asmmath_floor(a.x-b.x),asmmath_floor(a.y-b.y));
+      return asmmath_sqrt(c.x*c.x + c.y*c.y);
+      //return (a+ -c).len();
+}
+extern double tmp;
+void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->raw for ur unsigned ints
 {
-      extern vec3 camera_pos, camera_orientation;
-      extern double game_fov;
-      vec2 v0 = calc2dcoords(camera_pos, tri.faceedge[0][0], camera_orientation, game_fov);
-      vec2 v1 = calc2dcoords(camera_pos, tri.faceedge[1][0], camera_orientation, game_fov);
-      vec2 v2 = calc2dcoords(camera_pos, tri.faceedge[2][0], camera_orientation, game_fov);
-      for (long long x = 0; x < screenwidth; x++)
+   
+
+                        vec2 p(0, 0);
+      //need to compute bbox. better performance
+
+      scalar minx = screenwidth, miny = screenheight, maxx = 0, maxy = 0;
+
+      scalar *max_ret,*min_ret;
+      for (int i = 0; i < 3; ++i)
       {
-            for (long long y = 0; y < screenheight; y++)
-            {
-                  vec2 p(0, 0);
-                  p.x = x + 0.5f;
-                  p.y = y + 0.5f;
-                  double w0 = edgefunc(v1, v2, p);
-                  double w1 = edgefunc(v2, v0, p);
-                  double w2 = edgefunc(v0, v1, p);
-                  if (w0 >= 0 && w1 >= 0 && w2 >= 0)
-                  {
-                        if (!tri.tex)
-                              putpix(vec2(x, y), tri.colour);
-                        else
-                              printf("WARNING: UNIMPLEMENTED CODE AHEAD\n");
-                  }
-            }
+            min_ret = asmmath_min_simd(tri[i].x, tri[i].y,minx,miny);
+            minx=min_ret[0];
+            miny=min_ret[1];
+            max_ret = asmmath_max_simd(tri[i].x, tri[i].y,maxx,maxy);
+            maxx=max_ret[0];
+            maxy=max_ret[1];
       }
-}*/
+
+
+
+      for ( int x =minx; x < maxx; x++)//try
+      {
+            for ( int y = miny; y < maxy; y++)
+            {
+                  if(x>screenwidth||y>screenheight)continue;
+                  p.x=x+0.5;
+                  p.y=y+0.5;
+
+                  register scalar var0=(tri[1].y-tri[2].y);
+                  register scalar var1=(tri[0].x-tri[2].x);
+                  register scalar var2=(p.x-tri[2].x);
+                  register scalar var3=(tri[2].x-tri[1].x);
+                  register scalar var4=(p.y-tri[2].y);
+                  register scalar var5=var0*var1;
+                  register scalar var6=(tri[0].y-tri[2].y);
+                  register scalar var7=(var5+var3*var6);
+                  double a=((var0*var2)+var3*var4)/var7;
+                  
+                  double b=(((tri[2].y-tri[0].y)*var2)+var1*var4)/var7;
+                  double c = 1-a-b;
+                  if((a>=0&&b>=0&&c>=0)  ){
+                        if(!tex)
+                              putpix(vec2(x,y),0xffffffff);
+                         else {
+                              
+                              double oneOverZ = tri[0].z * a + tri[1].z * b + tri[2].z * c; 
+                              double zz = 1 / oneOverZ; //check division by zero
+
+                              scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x;
+                              scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; 
+                              if(x<screenwidth&&y<screenheight&&x>0&&y>0)
+                              if(zbuff[x+y*screenwidth] < zz){
+                                    zbuff[x+y*screenwidth] = zz;
+                                    putpix(vec2((uint)x,(uint)y),tex->map(vec2(s,t)));//later
+                              }
+                        }
+                  }
+                  
+            }
+
+      
+      }
+
+}
 void clearfb()
 {
-      //portabillity!!1!!!!!!!!eleven memset:🗿
-      for (unsigned long long i = 0; i < screenwidth * screenheight; ++i)
+
+      //portabillity!!1!!!!!!!!eleven memset:🗿 y 𓂺  some systems might not have memset, for example bare metal shit
+      for (int i = 0; i < screenwidth * screenheight; ++i)
       {
             framebuffer[i] = 0;
       }
@@ -243,7 +288,7 @@ unsigned int map(double tu, double tv, unsigned int *internalBuffer, vec2 texd)
 
 vec3 HSV2RGB(float H, float S,float V){
     if(H>360 || H<0 || S>100 || S<0 || V>100 || V<0){
-        std::cout<<"The givem HSV values are not in valid range"<<std::endl;
+        std::cout<<"The given HSV values are not in valid range"<<std::endl;
         return vec3(0,0,0);
     }
     float s = S/100;
