@@ -208,11 +208,10 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->
                   register scalar var4=(p.y-tri[2].y);
                   register scalar var5=var0*var1;
                   register scalar var6=(tri[0].y-tri[2].y);
-                  double a=((var0*var2)+var3*var4)/
-                  (var5+var3*var6);
+                  register scalar var7=(var5+var3*var6);
+                  double a=((var0*var2)+var3*var4)/var7;
                   
-                  double b=(((tri[2].y-tri[0].y)*var2)+var1*var4)/
-                  (var5+var3*var6);
+                  double b=(((tri[2].y-tri[0].y)*var2)+var1*var4)/var7;
                   double c = 1-a-b;
                   if((a>=0&&b>=0&&c>=0)  ){
                         if(!tex)

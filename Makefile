@@ -1,5 +1,5 @@
 BUILDDIR=build
-OPTIMIZE=-Ofast -msse4 -mfpmath=sse -march=native -mavx2 -mpopcnt -mbmi2  -fno-pie -fno-PIE -fno-PIC -no-pie 
+OPTIMIZE=-Ofast -msse4 -mfpmath=sse -march=native -mpopcnt -mbmi2  -fno-pie -fno-PIE -fno-PIC -no-pie 
 ELFNAME=BalashEngine#checkout to branch cpp
 
 CXX=g++

@@ -128,7 +128,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
 
 
 
-
+    bool nodrawtri=true;
     setProjectionMatrix(140 deg, 0.01, 100, Mproj); //WTF
     uint numFaces = obj->f_count;
     //vec3* vertices = makeCube();//i see weird lines  try to rotate camera
@@ -141,16 +141,17 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
         vec3 shit[3];
         for (uint32_t j = 0; j <(uint32_t) currFace.v_count; ++j)
         {     
-            vec3 got = vec3(currFace.vertices[j].x, currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
-            vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 160)); //swap vars. stop will watch smth
+            vec3 got = vec3(currFace.vertices[j].x, -currFace.vertices[j].y, -currFace.vertices[j].z);//crutch, i know that
+            vec3 vertCamera = mulm4x4andv3(worldToCamera,  got * 40 + vec3(0, 0, 200)); //swap vars. stop will watch smth
             double aspect = (double)screenwidth/(double)screenheight;
             vertCamera.y*=aspect;
             vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
-            /*if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
+            if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
             {
                 //shit[j]=vec3(0,0,0);
                 //continue; //leave it as a comment OKAY
-            }*/
+                nodrawtri=true;
+            }
             scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
             scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
             //arrayv2[i] = vec2(x, y);
@@ -161,8 +162,8 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
         }   //fix later.it is triangle fault ok
             //nothing.
 
-        drawtri(shit,tex,currFace.uvertices,zbuf);//draw only one face
-
+            if(nodrawtri==false){drawtri(shit,tex,currFace.uvertices,zbuf);}//draw only one face
+            nodrawtri=false;
             }
 
 
@@ -178,8 +179,8 @@ int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
     zbuf=new scalar[screenwidth*screenheight];
-    texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);//path to castle texture please
-    char * path = (char*)"textures/fixed.obj";
+    texturewh image = platspec_loadTexture("textures/newedrien.png", 0, 0);//path to castle texture please
+    char * path = (char*)"textures/edrien.obj";
     if(argc > 1){ path=argv[1];}//./build/BalashEngine path/to/obj
 
     object objcube = platspec_loadOBJ(path);
