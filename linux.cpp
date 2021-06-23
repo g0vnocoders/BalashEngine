@@ -228,9 +228,9 @@ object platspec_loadOBJ(const char * filename){// (　-_･) ︻デ═一  ▸
         }
         if(buffer[0]=='v' && buffer[1]=='t'){
             char* shit [2];
-            strsep(&buffer, " ");
-            shit[0]=strsep(&buffer, " ");
-            shit[1]=strsep(&buffer, " ");
+            strtok(buffer, " ");
+            shit[0]=strtok(buffer, " ");
+            shit[1]=strtok(buffer, " ");
             ret.uvertices[uv_count]=vec2(//make uv
             strtod(shit[0],0x0),   
             strtod(shit[1],0x0));

@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 
 
         //dangiit that's not how it works, use a switch statment
-        if(!frame_skip)
+        
         platspec_sync(); //SSSHHHIIIITTTT bloatshare
 
     }
