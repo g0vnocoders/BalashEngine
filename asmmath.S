@@ -9,8 +9,14 @@
 .globl asmmath_max
 .globl asmmath_max_simd
 .globl asmmath_min_simd
-
+.globl asmmath_sub_SSE_V2
 .globl tmp
+asmmath_sub_SSE_V2:
+    movupd (%rsi),%xmm1
+    movupd (%rdi),%xmm2
+    subpd %xmm2,%xmm1
+    movupd %xmm1,%xmm0
+    ret
 asmmath_floor:
     roundsd $9,%xmm0,%xmm0
     ret
@@ -19,7 +25,7 @@ asmmath_floor:
 .section .data
 tmp: .quad 0, 0
 .align 16
-mask: .quad 0x7fffffffffffffff //turns out that it needs to be aligned to 16 bytes or else it'll segfault.
+mask: .quad 0x7fffffffffffffff
 .section .text
 asmmath_abs:   
     andpd mask,%xmm0

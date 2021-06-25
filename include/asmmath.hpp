@@ -1,4 +1,13 @@
 #include "types.hpp"
+struct SSE_V2{
+    double low,high;
+    
+}__attribute__((packed));
+void asmmath_sub_SSE_V2(SSE_V2 *in,SSE_V2 *in_2);
+//actually vectors are non commonly use
+//i can see optimization heaven. it is MATRIX
+//okay
+
 extern "C"{
 double asmmath_floor(double val);
 vec3* asmmath_vec3cos(vec3* pos);//is it legal

@@ -5,7 +5,7 @@ ELFNAME=BalashEngine#checkout to branch cpp
 CXX=g++
 CC=gcc
 LIBS=`pkg-config --libs --cflags libpng`
-
+HEADERS=$(wildcard include/*.hpp) $(wildcard *.hpp)
 CFLAGS= $(OPTIMIZE) $(LIBS) -lpthread -lSDL2 -g -Wall #remove -g when release 
 CPPFLAGS= $(OPTIMIZE) -g   -Wall #remove -g when release
 ASFLAGS=-g
@@ -15,7 +15,7 @@ ASM:=$(wildcard *.S)
 OBJS:=$(SOURCE:.cpp=.o) 
 ASMOBJS:=$(ASM:.S=.o)
 
-default:all run
+default:$(HEADERS) all run 
 so:
 	c++ -shared -o $(BUILDDIR)/libbalash.so -fPIC $(CFLAGS) $(SOSOURCE) 
 run:
