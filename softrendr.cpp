@@ -1,7 +1,6 @@
 #include "softrendr.hpp"
 #include "include/asmmath.hpp"
 #include "include/types.hpp"
-
 #include "include/geometry.hpp"
 #include <stdexcept>
 #include <iostream>
@@ -174,12 +173,14 @@ extern double tmp;
 void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->raw for ur unsigned ints
 {
    
+                                                int oozcounter=0;
 
                         vec2 p(0, 0);
       //need to compute bbox. better performance
 
       scalar minx = screenwidth, miny = screenheight, maxx = 0, maxy = 0;
-
+                  double oneOverZ=0;
+                  double zz =0;
       scalar *max_ret,*min_ret;
       for (int i = 0; i < 3; ++i)
       {
@@ -193,34 +194,51 @@ void drawtri(vec3 tri[3],texturewh * tex, vec2  uv[3],double * zbuff)//use tex->
 
 
 
-      for ( int x =minx; x < maxx; x++)//try
+      for ( int x =minx; x <(double) maxx; x++)//try
       {
-            for ( int y = miny; y < maxy; y++)
+            if(x<0){
+                  x=0;
+            }
+            if(x>=screenwidth){
+                  break;
+            }
+            for ( int y = miny; y <(double) maxy; y++)
             {
-                  if(x>screenwidth||y>screenheight)continue;
+                  if(y>=screenheight){
+                        break;
+                  }
+                  if(y<0){
+                        y=0;
+                  }
                   p.x=x+0.5;
                   p.y=y+0.5;
 
-                  register scalar var0=(tri[1].y-tri[2].y);
-                  register scalar var1=(tri[0].x-tri[2].x);
-                  register scalar var2=(p.x-tri[2].x);
-                  register scalar var3=(tri[2].x-tri[1].x);
-                  register scalar var4=(p.y-tri[2].y);
-                  register scalar var5=var0*var1;
-                  register scalar var6=(tri[0].y-tri[2].y);
-                  register scalar var7=(var5+var3*var6);
+                   scalar var0=(tri[1].y-tri[2].y);
+                   scalar var1=(tri[0].x-tri[2].x);
+                   scalar var2=(p.x-tri[2].x);
+                   scalar var3=(tri[2].x-tri[1].x);
+                   scalar var4=(p.y-tri[2].y);
+                   scalar var5=var0*var1;
+                   scalar var6=(tri[0].y-tri[2].y);
+                   scalar var7=(var5+var3*var6);
                   double a=((var0*var2)+var3*var4)/var7;
-                  
+
                   double b=(((tri[2].y-tri[0].y)*var2)+var1*var4)/var7;
                   double c = 1-a-b;
+
                   if((a>=0&&b>=0&&c>=0)  ){
                         if(!tex)
                               putpix(vec2(x,y),0xffffffff);
                          else {
                               
-                              double oneOverZ = tri[0].z * a + tri[1].z * b + tri[2].z * c; 
-                              double zz = 1 / oneOverZ; //check division by zero
-
+      
+                              if(oozcounter>=8){
+                                    oneOverZ = tri[0].z * a + tri[1].z * b + tri[2].z * c; 
+                                    zz = 1 / oneOverZ; //check division by zero
+                                    oozcounter=0;
+                              }
+                              ++oozcounter;
+                              
                               scalar s = a * uv[0].x + b * uv[1].x + c * uv[2].x;
                               scalar t = a * uv[0].y + b * uv[1].y + c * uv[2].y; 
                               if(x<screenwidth&&y<screenheight&&x>0&&y>0)

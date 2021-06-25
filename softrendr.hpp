@@ -22,13 +22,6 @@ inline void putzbuf(vec2 pos,scalar z){
             zbuf[loc] = z; //*(unsigned int*)shit;//>>8;
       }
 }
-inline void putpix(vec2 pos, unsigned int color)
-{
-      if (pos.x < screenwidth && pos.y < screenheight && pos.x >= 0 && pos.y >= 0)
-      {
-                  unsigned int loc = pos.x + pos.y * screenwidth;
+#define putpix( pos, color) ((pos.x < screenwidth && pos.y < screenheight && pos.x >= 0 && pos.y >= 0)?( framebuffer[(unsigned int)(pos.x + pos.y * screenwidth)] = color):0)
 
-            framebuffer[loc] = color; //*(unsigned int*)shit;//>>8;
-      }
-}
 #endif

@@ -1,4 +1,5 @@
 //makea
+//optimize drawtri, ill deal with softrendr 
 #include <stdio.h> //deal with texture loading at linux.c
 #include "softrendr.hpp"
 #include "include/linux.hpp"
@@ -93,7 +94,7 @@ vec3 pos;
 
 void calcrelativemomentum(vec3 *momentum, scalar speed, vec3 rot)
 { //why pointer? it is obje
-    (*momentum).z*=-1;
+    (*momentum).z*=-1; 
     (*momentum).y*=-1;//hi
     scalar dist = (*momentum).x * (*momentum).x + (*momentum).z * (*momentum).z + (*momentum).y * (*momentum).y;
     if (dist >= 0.01)
@@ -146,12 +147,7 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
             double aspect = (double)screenwidth/(double)screenheight;
             vertCamera.y*=aspect;
             vec3 projectedVert = mulm4x4andv3(*Mproj, vertCamera);
-            if (projectedVert.x < -1 || projectedVert.x > 1 || projectedVert.y < -1 || projectedVert.y > 1 || projectedVert.z < worldToCamera[3][3])
-            {
-                //shit[j]=vec3(0,0,0);
-                //continue; //leave it as a comment OKAY
-                nodrawtri=true;
-            }
+
             scalar x = (projectedVert.x + 1) * 0.5 * screenwidth;  //std::min(screenwidth - 1, (uint32_t)((projectedVert.x + 1) * 0.5 * screenwidth));
             scalar y = (projectedVert.y + 1) * 0.5 * screenheight; //std::min(screenheight -1, (uint32_t)((1 - (projectedVert.y + 1) * 0.5) * screenheight));
             //arrayv2[i] = vec2(x, y);
@@ -161,9 +157,9 @@ void matrixticktest(scalar xx, scalar yy, scalar zz, vec3 rot, object * obj,text
 
         }   //fix later.it is triangle fault ok
             //nothing.
-
-            if(nodrawtri==false){drawtri(shit,tex,currFace.uvertices,zbuf);}//draw only one face
-            nodrawtri=false;
+            extern bool frame_skip;
+                           if(!frame_skip){drawtri(shit,tex,currFace.uvertices,zbuf);}//draw only one face
+    
             }
 
 
@@ -179,8 +175,8 @@ int main(int argc, char **argv)
 {
     framebuffer = (unsigned int *)platspec_getframebuffer();
     zbuf=new scalar[screenwidth*screenheight];
-    texturewh image = platspec_loadTexture("textures/newedrien.png", 0, 0);//path to castle texture please
-    char * path = (char*)"textures/edrien.obj";
+    texturewh image = platspec_loadTexture("textures/uvtest.png", 0, 0);//path to castle texture please
+    char * path = (char*)"textures/fixed.obj";
     if(argc > 1){ path=argv[1];}//./build/BalashEngine path/to/obj
 
     object objcube = platspec_loadOBJ(path);
@@ -204,7 +200,6 @@ int main(int argc, char **argv)
             frame_skip=true;
         }       
  lastTime=clock();
-                if(!frame_skip)
                 matrixticktest(xmove, ymove, zmove, rot, &objcube,&image);
         xmove = 0;
         ymove = 0;
